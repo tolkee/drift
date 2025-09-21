@@ -1,0 +1,19 @@
+{
+  "name": "@drift/backend",
+  "version": "1.0.0",
+  "description": "Drift backend package containing the convex database and functions",
+  "scripts": {
+    "dev": "convex dev"
+  },
+  "exports": {
+    "./convex/api": {
+      "types": "./convex/_generated/api.d.ts",
+      "default": "./convex/_generated/api.js"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "convex": "^1.27.1"
+  }
+}
