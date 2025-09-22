@@ -1,0 +1,44 @@
+import { LoaderCircleIcon } from "lucide-react";
+import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "../ui/button";
+
+export function SignInForm() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSignInGoogle = async () => {
+    setIsLoading(true);
+    try {
+      await authClient.signIn.social({ provider: "google" });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <h1>Sign In</h1>
+      <Button
+        variant="primary"
+        onClick={handleSignInGoogle}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <LoaderCircleIcon className="animate-spin size-4" />
+        ) : null}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 640 640"
+          aria-label="Google"
+          aria-hidden="true"
+          fill="currentColor"
+        >
+          <path d="M564 325.8C564 467.3 467.1 568 324 568C186.8 568 76 457.2 76 320C76 182.8 186.8 72 324 72C390.8 72 447 96.5 490.3 136.9L422.8 201.8C334.5 116.6 170.3 180.6 170.3 320C170.3 406.5 239.4 476.6 324 476.6C422.2 476.6 459 406.2 464.8 369.7L324 369.7L324 284.4L560.1 284.4C562.4 297.1 564 309.3 564 325.8z" />
+        </svg>
+        Sign in with Google
+      </Button>
+    </div>
+  );
+}
