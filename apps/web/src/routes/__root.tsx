@@ -1,7 +1,5 @@
-import { TanstackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import type { ConvexReactClient } from "convex/react";
 import { z } from "zod";
 import { authClient } from "@/lib/auth-client";
@@ -27,7 +25,7 @@ function RootComponent() {
   return (
     <>
       <Outlet />
-      <TanstackDevtools
+      {/* <TanstackDevtools
         config={{
           position: "bottom-left",
         }}
@@ -37,7 +35,7 @@ function RootComponent() {
             render: <TanStackRouterDevtoolsPanel />,
           },
         ]}
-      />
+      /> */}
     </>
   );
 }
