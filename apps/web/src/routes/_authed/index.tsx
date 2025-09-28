@@ -1,10 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PageLayout } from "@/modules/global-layout/page-layout";
 
 export const Route = createFileRoute("/_authed/")({
   component: App,
-  pendingComponent: () => <div>Loading...</div>,
 });
 
 function App() {
-  return <div></div>;
+  return (
+    <PageLayout breadcrumbs={[{ label: "Home", href: "/" }]}>
+      <div>Habits</div>
+    </PageLayout>
+  );
 }

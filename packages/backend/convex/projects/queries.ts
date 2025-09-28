@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { query } from "../_generated/server";
 import { getUserId } from "../auth/utils";
-import { isAllowedToAccessProjectGuard } from "./utils";
+import { getProjectByIdWithGuards, getProjectBySlugWithGuards } from "./utils";
 
 export const getProjects = query({
   args: {},
@@ -15,88 +15,44 @@ export const getProjects = query({
   },
 });
 
-export const getColumns = query({
+export const getFullProject = query({
   args: {
-    projectId: v.id("projects"),
+    slug: v.string(),
   },
   handler: async (ctx, args) => {
-    await isAllowedToAccessProjectGuard(ctx, args.projectId);
+    const project = await getProjectBySlugWithGuards(ctx, args.slug);
 
-    return await ctx.db
-      .query("columns")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
-  },
-});
+    const [columns, tasks] = await Promise.all([
+      ctx.db
+        .query("columns")
+        .withIndex("by_project", (q) => q.eq("projectId", project._id))
+        .collect(),
+      ctx.db
+        .query("tasks")
+        .withIndex("by_project", (q) => q.eq("projectId", project._id))
+        .collect(),
+    ]);
 
-export const getTasksByProject = query({
-  args: {
-    projectId: v.id("projects"),
-  },
-  handler: async (ctx, args) => {
-    await isAllowedToAccessProjectGuard(ctx, args.projectId);
-
-    return await ctx.db
-      .query("tasks")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
-  },
-});
-
-export const getTasksByColumn = query({
-  args: {
-    columnId: v.id("columns"),
-  },
-  handler: async (ctx, args) => {
-    const column = await ctx.db.get(args.columnId);
-    if (!column) {
-      throw new Error("Column not found");
-    }
-    await isAllowedToAccessProjectGuard(ctx, column.projectId);
-
-    return await ctx.db
-      .query("tasks")
-      .withIndex("by_column", (q) => q.eq("columnId", args.columnId))
-      .collect();
-  },
-});
-
-export const getTasks = query({
-  handler: async (ctx) => {
-    const userId = await getUserId(ctx);
-
-    return await ctx.db
-      .query("tasks")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
-  },
-});
-
-export const getTask = query({
-  args: {
-    taskId: v.id("tasks"),
-  },
-  handler: async (ctx, args) => {
-    const task = await ctx.db.get(args.taskId);
-    if (!task) {
-      throw new Error("Task not found");
-    }
-    await isAllowedToAccessProjectGuard(ctx, task.projectId);
-
-    return task;
+    return {
+      ...project,
+      columns: columns.map((column) => ({
+        ...column,
+        tasks: tasks.filter((task) => task.columnId === column._id),
+      })),
+    };
   },
 });
 
 export const getProjectAvailableFlags = query({
   args: {
-    projectId: v.id("projects"),
+    id: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    await isAllowedToAccessProjectGuard(ctx, args.projectId);
+    const project = await getProjectByIdWithGuards(ctx, args.id);
 
     const tasks = await ctx.db
       .query("tasks")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .collect();
 
     const deduplicatedTags = [...new Set(tasks.flatMap((task) => task.tags))];

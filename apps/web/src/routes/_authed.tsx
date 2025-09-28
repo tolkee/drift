@@ -1,7 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/modules/global-layout/app-sidebar";
-import { SiteHeader } from "@/modules/global-layout/site-header";
 
 export const Route = createFileRoute("/_authed")({
   component: RouteComponent,
@@ -26,7 +25,6 @@ function RouteComponent() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader />
         <Outlet />
       </SidebarInset>
     </SidebarProvider>

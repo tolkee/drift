@@ -5,9 +5,12 @@ export default {
   projects: defineTable({
     name: v.string(),
     description: v.string(),
-    tags: v.array(v.string()),
+    tags: v.optional(v.array(v.string())),
+    slug: v.string(),
     userId: v.string(),
-  }).index("by_user", ["userId"]),
+  })
+    .index("by_user", ["userId"])
+    .index("by_slug_user", ["slug", "userId"]),
   columns: defineTable({
     name: v.string(),
     rank: v.number(),

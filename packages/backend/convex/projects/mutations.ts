@@ -1,6 +1,8 @@
 import { v } from "convex/values";
+import slugify from "slugify";
 import { mutation } from "../_generated/server";
 import { getUserId } from "../auth/utils";
+import { getProjectByIdWithGuards } from "./utils";
 
 export const createProject = mutation({
   args: {
@@ -10,9 +12,13 @@ export const createProject = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx);
+
+    const slug = slugify(args.name, { lower: true });
+
     return await ctx.db.insert("projects", {
       ...args,
       userId,
+      slug,
     });
   },
 });
@@ -20,24 +26,21 @@ export const createProject = mutation({
 export const updateProject = mutation({
   args: {
     id: v.id("projects"),
-    name: v.string(),
-    description: v.string(),
-    tags: v.array(v.string()),
+    patch: v.object({
+      name: v.optional(v.string()),
+      description: v.optional(v.string()),
+      tags: v.optional(v.array(v.string())),
+    }),
   },
   handler: async (ctx, args) => {
-    const userId = await getUserId(ctx);
+    const project = await getProjectByIdWithGuards(ctx, args.id);
 
-    const project = await ctx.db.get(args.id);
-
-    if (!project) {
-      throw new Error("Project not found");
-    }
-
-    if (project.userId !== userId) {
-      throw new Error("Unauthorized");
-    }
-
-    return await ctx.db.patch(args.id, args);
+    return await ctx.db.patch(project._id, {
+      ...args.patch,
+      ...(args.patch.name && {
+        slug: slugify(args.patch.name, { lower: true }),
+      }),
+    });
   },
 });
 
@@ -46,18 +49,8 @@ export const deleteProject = mutation({
     id: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getUserId(ctx);
+    const project = await getProjectByIdWithGuards(ctx, args.id);
 
-    const project = await ctx.db.get(args.id);
-
-    if (!project) {
-      throw new Error("Project not found");
-    }
-
-    if (project.userId !== userId) {
-      throw new Error("Unauthorized");
-    }
-
-    return await ctx.db.delete(args.id);
+    return await ctx.db.delete(project._id);
   },
 });
