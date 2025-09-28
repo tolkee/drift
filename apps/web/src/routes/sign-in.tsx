@@ -3,7 +3,7 @@ import z from "zod";
 import { SignInForm } from "@/components/forms/sign-in-form";
 
 export const Route = createFileRoute("/sign-in")({
-  component: SignInForm,
+  component: RouteComponent,
   validateSearch: z.object({
     redirectTo: z.string().optional(),
   }),
@@ -14,3 +14,13 @@ export const Route = createFileRoute("/sign-in")({
     }
   },
 });
+
+function RouteComponent() {
+  return (
+    <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm md:max-w-4xl">
+        <SignInForm />
+      </div>
+    </div>
+  );
+}

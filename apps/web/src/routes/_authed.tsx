@@ -1,41 +1,34 @@
-import {
-  createFileRoute,
-  Outlet,
-  redirect,
-  useNavigate,
-} from "@tanstack/react-router";
-import z from "zod";
-import { Button } from "@/components/ui/button";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SiteHeader } from "@/components/site-header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export const Route = createFileRoute("/_authed")({
   component: RouteComponent,
-  validateSearch: z.object({
-    ott: z.string().optional(),
-  }),
-  beforeLoad: async ({ context, search }) => {
+  beforeLoad: async ({ context }) => {
     const { user } = context;
 
-    // FIXME: use a callback url for google redirect to support ott, and prevent that condition on ott existing
-    // For now, if we remove this, the problem is that google after validating, redirects to / with ott, which would be redirected to sign-in cause still no session
-    if (!user && !search.ott) {
+    if (!user) {
       throw redirect({ to: "/sign-in" });
     }
   },
 });
 
 function RouteComponent() {
-  const navigate = useNavigate();
-
   return (
-    <div>
-      <Outlet />
-
-      <Button
-        variant="destructive"
-        onClick={() => navigate({ to: "/sign-out" })}
-      >
-        Sign Out
-      </Button>
-    </div>
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        <SiteHeader />
+        <Outlet />
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

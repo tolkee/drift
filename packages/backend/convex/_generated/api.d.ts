@@ -10,10 +10,12 @@
 
 import type * as auth_auth from "../auth/auth.js";
 import type * as auth_queries from "../auth/queries.js";
+import type * as auth_utils from "../auth/utils.js";
 import type * as http from "../http.js";
 import type * as projects_mutations from "../projects/mutations.js";
 import type * as projects_queries from "../projects/queries.js";
 import type * as projects_tables from "../projects/tables.js";
+import type * as projects_utils from "../projects/utils.js";
 
 import type {
   ApiFromModules,
@@ -32,10 +34,12 @@ import type {
 declare const fullApi: ApiFromModules<{
   "auth/auth": typeof auth_auth;
   "auth/queries": typeof auth_queries;
+  "auth/utils": typeof auth_utils;
   http: typeof http;
   "projects/mutations": typeof projects_mutations;
   "projects/queries": typeof projects_queries;
   "projects/tables": typeof projects_tables;
+  "projects/utils": typeof projects_utils;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

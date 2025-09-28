@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Drift backend package containing the convex database and functions",
   "scripts": {
-    "dev": "convex dev"
+    "dev": "convex dev",
+    "deploy": "dotenvx run -f .env.production -- convex deploy"
   },
   "exports": {
     "./convex/api": {
@@ -15,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@convex-dev/better-auth": "^0.8.6",
+    "@dotenvx/dotenvx": "^1.51.0",
     "better-auth": "1.3.8",
     "convex": "^1.27.1"
   },

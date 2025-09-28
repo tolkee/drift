@@ -9,17 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as SignOutRouteImport } from './routes/sign-out'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as OauthCallbackRouteImport } from './routes/oauth-callback'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
+import { Route as AuthedProjectsRouteImport } from './routes/_authed/projects'
 
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SignOutRoute = SignOutRouteImport.update({
   id: '/sign-out',
   path: '/sign-out',
@@ -28,6 +24,11 @@ const SignOutRoute = SignOutRouteImport.update({
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OauthCallbackRoute = OauthCallbackRouteImport.update({
+  id: '/oauth-callback',
+  path: '/oauth-callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedRoute = AuthedRouteImport.update({
@@ -39,51 +40,59 @@ const AuthedIndexRoute = AuthedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedProjectsRoute = AuthedProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => AuthedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
+  '/oauth-callback': typeof OauthCallbackRoute
   '/sign-in': typeof SignInRoute
   '/sign-out': typeof SignOutRoute
-  '/test': typeof TestRoute
+  '/projects': typeof AuthedProjectsRoute
   '/': typeof AuthedIndexRoute
 }
 export interface FileRoutesByTo {
+  '/oauth-callback': typeof OauthCallbackRoute
   '/sign-in': typeof SignInRoute
   '/sign-out': typeof SignOutRoute
-  '/test': typeof TestRoute
+  '/projects': typeof AuthedProjectsRoute
   '/': typeof AuthedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authed': typeof AuthedRouteWithChildren
+  '/oauth-callback': typeof OauthCallbackRoute
   '/sign-in': typeof SignInRoute
   '/sign-out': typeof SignOutRoute
-  '/test': typeof TestRoute
+  '/_authed/projects': typeof AuthedProjectsRoute
   '/_authed/': typeof AuthedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/sign-in' | '/sign-out' | '/test' | '/'
+  fullPaths: '/oauth-callback' | '/sign-in' | '/sign-out' | '/projects' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/sign-in' | '/sign-out' | '/test' | '/'
-  id: '__root__' | '/_authed' | '/sign-in' | '/sign-out' | '/test' | '/_authed/'
+  to: '/oauth-callback' | '/sign-in' | '/sign-out' | '/projects' | '/'
+  id:
+    | '__root__'
+    | '/_authed'
+    | '/oauth-callback'
+    | '/sign-in'
+    | '/sign-out'
+    | '/_authed/projects'
+    | '/_authed/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthedRoute: typeof AuthedRouteWithChildren
+  OauthCallbackRoute: typeof OauthCallbackRoute
   SignInRoute: typeof SignInRoute
   SignOutRoute: typeof SignOutRoute
-  TestRoute: typeof TestRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sign-out': {
       id: '/sign-out'
       path: '/sign-out'
@@ -96,6 +105,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oauth-callback': {
+      id: '/oauth-callback'
+      path: '/oauth-callback'
+      fullPath: '/oauth-callback'
+      preLoaderRoute: typeof OauthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed': {
@@ -112,14 +128,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedIndexRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/projects': {
+      id: '/_authed/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof AuthedProjectsRouteImport
+      parentRoute: typeof AuthedRoute
+    }
   }
 }
 
 interface AuthedRouteChildren {
+  AuthedProjectsRoute: typeof AuthedProjectsRoute
   AuthedIndexRoute: typeof AuthedIndexRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedProjectsRoute: AuthedProjectsRoute,
   AuthedIndexRoute: AuthedIndexRoute,
 }
 
@@ -128,9 +153,9 @@ const AuthedRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   AuthedRoute: AuthedRouteWithChildren,
+  OauthCallbackRoute: OauthCallbackRoute,
   SignInRoute: SignInRoute,
   SignOutRoute: SignOutRoute,
-  TestRoute: TestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
