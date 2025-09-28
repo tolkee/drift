@@ -1,5 +1,6 @@
 import { IconContrast2Filled } from "@tabler/icons-react";
 import { useState } from "react";
+import SignInIllustration from "@/assets/signin-illustration.png";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
@@ -63,7 +64,7 @@ export function SignInForm({
           </div>
           <div className="bg-muted relative hidden md:block">
             <img
-              src="/public/signin.png"
+              src={SignInIllustration}
               alt="Drift"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />
