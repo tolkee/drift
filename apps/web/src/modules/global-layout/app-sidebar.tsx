@@ -1,8 +1,6 @@
 import { IconContrast2Filled } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import type * as React from "react";
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -14,6 +12,8 @@ import {
 } from "@/components/ui/sidebar";
 import { useUser } from "@/hooks/use-user";
 import { navItems } from "@/lib/constants";
+import { NavMain } from "@/modules/global-layout/nav-main";
+import { NavUser } from "@/modules/global-layout/nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { email, name, image } = useUser();
