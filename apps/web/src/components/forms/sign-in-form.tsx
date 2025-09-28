@@ -1,6 +1,6 @@
 import { IconContrast2Filled } from "@tabler/icons-react";
 import { useState } from "react";
-import SignInIllustration from "@/assets/signin-illustration.png";
+import SignInIllustration from "@/assets/signin-illustration.jpg";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
