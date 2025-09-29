@@ -2,6 +2,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import type { ConvexReactClient } from "convex/react";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
 
@@ -23,7 +24,7 @@ function RootComponent() {
   const isMobile = useIsMobile();
 
   return (
-    <>
+    <ThemeProvider storageKey="vite-ui-theme">
       <Outlet />
       <Toaster position={isMobile ? "top-center" : "bottom-right"} />
       {/* <TanstackDevtools
@@ -37,6 +38,6 @@ function RootComponent() {
           },
         ]}
       /> */}
-    </>
+    </ThemeProvider>
   );
 }

@@ -4,7 +4,6 @@ import type { DataModel } from "@drift/backend/convex/dataModel";
 import { IconDotsVertical, IconPencil, IconTrash } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -13,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ProjectTag } from "./project-tag";
 
 type ProjectCardProps = {
   project: DataModel["projects"]["document"];
@@ -73,13 +73,9 @@ export function ProjectCard({
           </div>
           <div className="flex flex-wrap gap-2 mt-4">
             {tagsWithColors?.map((tag) => (
-              <Badge
-                key={tag.name}
-                variant="secondary"
-                style={{ backgroundColor: tag.color }}
-              >
+              <ProjectTag key={tag.name} color={tag.color}>
                 {tag.name}
-              </Badge>
+              </ProjectTag>
             ))}
           </div>
         </CardContent>

@@ -16,8 +16,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ProjectTag } from "@/modules/projects/components/project-tag";
 import { ColorSelect } from "./color-select";
-import { Badge } from "./ui/badge";
 import { Checkbox } from "./ui/checkbox";
 import { Skeleton } from "./ui/skeleton";
 
@@ -73,13 +73,9 @@ export function TagsCreatableCombobox({
                 {availableTags
                   .filter((option) => values.includes(option.name))
                   .map((option) => (
-                    <Badge
-                      key={option._id}
-                      style={{ backgroundColor: option.color }}
-                      variant="secondary"
-                    >
+                    <ProjectTag key={option._id} color={option.color}>
                       {option.name}
-                    </Badge>
+                    </ProjectTag>
                   ))}
               </div>
             )}
@@ -128,12 +124,7 @@ export function TagsCreatableCombobox({
                       variant="outlined"
                       className="mr-2"
                     />
-                    <Badge
-                      variant="secondary"
-                      style={{ backgroundColor: option.color }}
-                    >
-                      {option.name}
-                    </Badge>
+                    <ProjectTag color={option.color}>{option.name}</ProjectTag>
                   </CommandItem>
                 ))}
                 {searchValue &&
@@ -150,12 +141,7 @@ export function TagsCreatableCombobox({
                     >
                       <IconPlus className="text-primary" />
                       Add new tag:
-                      <Badge
-                        style={{ backgroundColor: newTagColor }}
-                        variant="secondary"
-                      >
-                        {searchValue}
-                      </Badge>
+                      <ProjectTag color={newTagColor}>{searchValue}</ProjectTag>
                       <ColorSelect
                         className="ml-4"
                         colors={TAG_COLORS}

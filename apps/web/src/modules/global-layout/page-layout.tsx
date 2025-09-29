@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { ModeToggle } from "@/components/theme-toggle";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -57,6 +58,7 @@ export function PageLayout({
             </Breadcrumb>
           </h1>
         </div>
+        <ModeToggle className="mr-4" />
       </header>
       <main className={cn("px-4 md:px-8 py-6 md:py-8", className)}>
         {children}
