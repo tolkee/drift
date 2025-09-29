@@ -139,6 +139,7 @@ export function TagsCreatableCombobox({
                 {searchValue &&
                   !availableTags.some((tag) => tag.name === searchValue) && (
                     <CommandItem
+                      value={searchValue}
                       className="p-3"
                       key="create"
                       onSelect={() => {

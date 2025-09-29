@@ -1,6 +1,6 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@drift/backend/convex/api";
-import type { DataModel, Id } from "@drift/backend/convex/dataModel";
+import type { DataModel } from "@drift/backend/convex/dataModel";
 import { IconDotsVertical, IconPencil, IconTrash } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
