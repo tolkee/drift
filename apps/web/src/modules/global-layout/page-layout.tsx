@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { GithubButton } from "@/modules/global-layout/github-button";
 import { ModeToggle } from "@/modules/global-layout/theme-toggle";
 
-type PageLayoutProps = {
+type PageProps = {
   className?: string;
   children?: React.ReactNode;
   breadcrumbs: {
@@ -22,11 +22,7 @@ type PageLayoutProps = {
   }[];
 };
 
-export function PageLayout({
-  children,
-  breadcrumbs,
-  className,
-}: PageLayoutProps) {
+export function Page({ children, breadcrumbs, className }: PageProps) {
   const breadcrumbWithoutLast = breadcrumbs.slice(0, -1);
   const lastBreadcrumb = breadcrumbs[breadcrumbs.length - 1];
 

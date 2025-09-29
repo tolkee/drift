@@ -7,7 +7,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { type ComponentProps, useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { PageLayout } from "@/modules/global-layout/page-layout";
+import {
+  EmptyPage,
+  EmptyPageActions,
+  EmptyPageContent,
+  EmptyPageDescription,
+  EmptyPageHeader,
+  EmptyPageIcon,
+  EmptyPageTitle,
+} from "@/modules/global-layout/empty-page";
+import { Page } from "@/modules/global-layout/page-layout";
 import { ProjectCard } from "@/modules/projects/components/project-card";
 import { CreateProjectModal } from "@/modules/projects/modals/create-project-modal";
 import { DeleteProjectModal } from "@/modules/projects/modals/delete-project-modal";
@@ -57,29 +66,32 @@ function RouteComponent() {
 
   if (!projects.length)
     return (
-      <PageLayout
-        className="flex flex-col gap-10 justify-center items-center w-full h-full flex-grow"
-        breadcrumbs={BREADCRUMBS}
-      >
-        <div className="flex flex-col gap-2 items-center text-center">
-          <IconFolder className="size-10" />
-          <h1 className="text-2xl font-bold">Create your first project</h1>
-          <p className="text-sm text-muted-foreground">
-            Projects are the main way to track, organize and work on your life
-            goals/projects.
-          </p>
-        </div>
-        <CreateProjectModal
-          open={isCreateProjectModalOpen}
-          onOpenChange={setIsCreateProjectModalOpen}
-        >
-          <CreateProjectButton />
-        </CreateProjectModal>
-      </PageLayout>
+      <EmptyPage breadcrumbs={BREADCRUMBS}>
+        <EmptyPageContent>
+          <EmptyPageIcon>
+            <IconFolder />
+          </EmptyPageIcon>
+          <EmptyPageHeader>
+            <EmptyPageTitle>Create your first project</EmptyPageTitle>
+            <EmptyPageDescription>
+              Projects are the main way to track, organize and work on your life
+              goals/projects.
+            </EmptyPageDescription>
+          </EmptyPageHeader>
+          <EmptyPageActions>
+            <CreateProjectModal
+              open={isCreateProjectModalOpen}
+              onOpenChange={setIsCreateProjectModalOpen}
+            >
+              <CreateProjectButton className="w-fit" />
+            </CreateProjectModal>
+          </EmptyPageActions>
+        </EmptyPageContent>
+      </EmptyPage>
     );
 
   return (
-    <PageLayout breadcrumbs={BREADCRUMBS}>
+    <Page breadcrumbs={BREADCRUMBS}>
       <CreateProjectModal
         open={isCreateProjectModalOpen}
         onOpenChange={setIsCreateProjectModalOpen}
@@ -122,6 +134,6 @@ function RouteComponent() {
           }}
         />
       )}
-    </PageLayout>
+    </Page>
   );
 }

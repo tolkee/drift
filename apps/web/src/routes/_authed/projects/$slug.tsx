@@ -1,12 +1,23 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@drift/backend/convex/api";
+import { IconArrowLeft, IconFolderOff } from "@tabler/icons-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { PageLayout } from "@/modules/global-layout/page-layout";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { unSlugify } from "@/lib/utils";
+import {
+  EmptyPage,
+  EmptyPageActions,
+  EmptyPageContent,
+  EmptyPageDescription,
+  EmptyPageHeader,
+  EmptyPageIcon,
+  EmptyPageTitle,
+} from "@/modules/global-layout/empty-page";
+import { Page } from "@/modules/global-layout/page-layout";
 
 export const Route = createFileRoute("/_authed/projects/$slug")({
   component: RouteComponent,
-  pendingComponent: () => <div>Loading...</div>,
   loader: async ({ context: { queryClient }, params }) => {
     Promise.all([
       await queryClient.prefetchQuery(
@@ -30,15 +41,45 @@ function RouteComponent() {
     }),
   );
 
-  const breadcrumbs = [
-    { label: "Projects", href: "/projects" },
-    { label: project.name, href: `/projects/${project.slug}` },
-  ];
-
   if (!project)
-    return <PageLayout breadcrumbs={breadcrumbs}>Project not found</PageLayout>;
+    return (
+      <EmptyPage
+        breadcrumbs={[
+          { label: "Projects", href: "/projects" },
+          { label: unSlugify(slug), href: `/projects/${slug}` },
+        ]}
+      >
+        <EmptyPageContent>
+          <EmptyPageIcon>
+            <IconFolderOff />
+          </EmptyPageIcon>
+          <EmptyPageHeader>
+            <EmptyPageTitle>Project not found</EmptyPageTitle>
+            <EmptyPageDescription>
+              The project you are looking for does not exist. Go back to the
+              projects list to see all your projects.
+            </EmptyPageDescription>
+          </EmptyPageHeader>
+          <EmptyPageActions>
+            <Link to="/projects">
+              <Button>
+                <IconArrowLeft />
+                Go to back to Projects list
+              </Button>
+            </Link>
+          </EmptyPageActions>
+        </EmptyPageContent>
+      </EmptyPage>
+    );
 
   return (
-    <PageLayout breadcrumbs={breadcrumbs}>{JSON.stringify(project)}</PageLayout>
+    <Page
+      breadcrumbs={[
+        { label: "Projects", href: "/projects" },
+        { label: project.name, href: `/projects/${project.slug}` },
+      ]}
+    >
+      {JSON.stringify(project)}
+    </Page>
   );
 }

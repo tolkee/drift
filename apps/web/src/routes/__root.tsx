@@ -25,7 +25,9 @@ function RootComponent() {
 
   return (
     <ThemeProvider storageKey="vite-ui-theme">
-      <Outlet />
+      <div data-vaul-drawer-wrapper="">
+        <Outlet />
+      </div>
       <Toaster position={isMobile ? "top-center" : "bottom-right"} />
       {/* <TanstackDevtools
         config={{

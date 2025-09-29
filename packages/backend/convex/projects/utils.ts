@@ -1,13 +1,12 @@
 import type { GenericQueryCtx } from "convex/server";
 import type { DataModel, Id } from "../_generated/dataModel";
 import { getUserId } from "../auth/utils";
-import { ProjectNotFoundError } from "./errors";
 
 /**
  * Get a project by slug with ownership guards.
  * @throws ProjectNotFoundError if the project is not found or the user is not the owner of the project.
  */
-export async function getProjectBySlugWithGuards(
+export async function getProjectBySlugWithAccessGuards(
   ctx: GenericQueryCtx<DataModel>,
   slug: string,
 ) {
@@ -18,10 +17,6 @@ export async function getProjectBySlugWithGuards(
     .withIndex("by_slug_user", (q) => q.eq("slug", slug).eq("userId", userId))
     .first();
 
-  if (!project) {
-    throw new ProjectNotFoundError();
-  }
-
   return project;
 }
 
@@ -29,7 +24,7 @@ export async function getProjectBySlugWithGuards(
  * Get a project by id with ownership guards.
  * @throws ProjectNotFoundError if the project is not found or the user is not the owner of the project.
  */
-export async function getProjectByIdWithGuards(
+export async function getProjectByIdWithAccessGuards(
   ctx: GenericQueryCtx<DataModel>,
   id: Id<"projects">,
 ) {
@@ -37,7 +32,7 @@ export async function getProjectByIdWithGuards(
   const project = await ctx.db.get(id);
 
   if (!project || project.userId !== userId) {
-    throw new ProjectNotFoundError();
+    return null;
   }
 
   return project;

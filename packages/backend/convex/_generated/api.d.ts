@@ -12,6 +12,7 @@ import type * as auth_auth from "../auth/auth.js";
 import type * as auth_queries from "../auth/queries.js";
 import type * as auth_utils from "../auth/utils.js";
 import type * as http from "../http.js";
+import type * as projects_constants from "../projects/constants.js";
 import type * as projects_errors from "../projects/errors.js";
 import type * as projects_mutations from "../projects/mutations.js";
 import type * as projects_queries from "../projects/queries.js";
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   "auth/queries": typeof auth_queries;
   "auth/utils": typeof auth_utils;
   http: typeof http;
+  "projects/constants": typeof projects_constants;
   "projects/errors": typeof projects_errors;
   "projects/mutations": typeof projects_mutations;
   "projects/queries": typeof projects_queries;

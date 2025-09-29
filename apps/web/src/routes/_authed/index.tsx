@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageLayout } from "@/modules/global-layout/page-layout";
+import { Page } from "@/modules/global-layout/page-layout";
 
 export const Route = createFileRoute("/_authed/")({
   component: App,
@@ -7,8 +7,8 @@ export const Route = createFileRoute("/_authed/")({
 
 function App() {
   return (
-    <PageLayout breadcrumbs={[{ label: "Home", href: "/" }]}>
+    <Page breadcrumbs={[{ label: "Home", href: "/" }]}>
       <div>Habits</div>
-    </PageLayout>
+    </Page>
   );
 }

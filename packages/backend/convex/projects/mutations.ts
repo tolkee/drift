@@ -2,7 +2,9 @@ import { v } from "convex/values";
 import slugify from "slugify";
 import { mutation } from "../_generated/server";
 import { getUserId } from "../auth/utils";
-import { getProjectByIdWithGuards } from "./utils";
+import { DEFAULT_COLUMNS } from "./constants";
+import { ProjectNotFoundError } from "./errors";
+import { getProjectByIdWithAccessGuards } from "./utils";
 
 export const createProject = mutation({
   args: {
@@ -15,10 +17,25 @@ export const createProject = mutation({
 
     const slug = slugify(args.name, { lower: true });
 
-    return await ctx.db.insert("projects", {
+    const projectId = await ctx.db.insert("projects", {
       ...args,
       userId,
       slug,
+    });
+
+    // create default columns
+    const [, doneColumnId] = await Promise.all(
+      DEFAULT_COLUMNS.map((column) =>
+        ctx.db.insert("columns", {
+          ...column,
+          projectId: projectId,
+        }),
+      ),
+    );
+
+    // set what column for that project is the done column
+    await ctx.db.patch(projectId, {
+      doneColumnId,
     });
   },
 });
@@ -33,7 +50,11 @@ export const updateProject = mutation({
     }),
   },
   handler: async (ctx, args) => {
-    const project = await getProjectByIdWithGuards(ctx, args.id);
+    const project = await getProjectByIdWithAccessGuards(ctx, args.id);
+
+    if (!project) {
+      throw new ProjectNotFoundError();
+    }
 
     return await ctx.db.patch(project._id, {
       ...args.patch,
@@ -49,7 +70,11 @@ export const deleteProject = mutation({
     id: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const project = await getProjectByIdWithGuards(ctx, args.id);
+    const project = await getProjectByIdWithAccessGuards(ctx, args.id);
+
+    if (!project) {
+      throw new ProjectNotFoundError();
+    }
 
     return await ctx.db.delete(project._id);
   },

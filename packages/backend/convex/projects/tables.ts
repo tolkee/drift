@@ -8,6 +8,7 @@ export default {
     tags: v.array(v.string()),
     slug: v.string(),
     userId: v.string(),
+    doneColumnId: v.optional(v.id("columns")), // the column where done tasks should be placed
   })
     .index("by_user", ["userId"])
     .index("by_slug_user", ["slug", "userId"]),
