@@ -1,7 +1,9 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import type { ConvexReactClient } from "convex/react";
-import { z } from "zod";
+import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createRootRouteWithContext<{
@@ -9,9 +11,6 @@ export const Route = createRootRouteWithContext<{
   convexClient: ConvexReactClient;
 }>()({
   component: RootComponent,
-  validateSearch: z.object({
-    ott: z.string().optional(),
-  }),
   beforeLoad: async () => {
     const session = await authClient.getSession();
 
@@ -22,9 +21,12 @@ export const Route = createRootRouteWithContext<{
 });
 
 function RootComponent() {
+  const isMobile = useIsMobile();
+
   return (
-    <>
+    <ThemeProvider storageKey="vite-ui-theme">
       <Outlet />
+      <Toaster position={isMobile ? "top-center" : "bottom-right"} />
       {/* <TanstackDevtools
         config={{
           position: "bottom-left",
@@ -36,6 +38,6 @@ function RootComponent() {
           },
         ]}
       /> */}
-    </>
+    </ThemeProvider>
   );
 }

@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import z from "zod";
-import { SignInForm } from "@/components/forms/sign-in-form";
+import { SignInForm } from "@/modules/auth/sign-in-form";
 
 export const Route = createFileRoute("/sign-in")({
   component: RouteComponent,

@@ -14,7 +14,8 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as OauthCallbackRouteImport } from './routes/oauth-callback'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
-import { Route as AuthedProjectsRouteImport } from './routes/_authed/projects'
+import { Route as AuthedProjectsIndexRouteImport } from './routes/_authed/projects/index'
+import { Route as AuthedProjectsSlugRouteImport } from './routes/_authed/projects/$slug'
 
 const SignOutRoute = SignOutRouteImport.update({
   id: '/sign-out',
@@ -40,9 +41,14 @@ const AuthedIndexRoute = AuthedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedProjectsRoute = AuthedProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
+const AuthedProjectsIndexRoute = AuthedProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedProjectsSlugRoute = AuthedProjectsSlugRouteImport.update({
+  id: '/projects/$slug',
+  path: '/projects/$slug',
   getParentRoute: () => AuthedRoute,
 } as any)
 
@@ -50,15 +56,17 @@ export interface FileRoutesByFullPath {
   '/oauth-callback': typeof OauthCallbackRoute
   '/sign-in': typeof SignInRoute
   '/sign-out': typeof SignOutRoute
-  '/projects': typeof AuthedProjectsRoute
   '/': typeof AuthedIndexRoute
+  '/projects/$slug': typeof AuthedProjectsSlugRoute
+  '/projects': typeof AuthedProjectsIndexRoute
 }
 export interface FileRoutesByTo {
   '/oauth-callback': typeof OauthCallbackRoute
   '/sign-in': typeof SignInRoute
   '/sign-out': typeof SignOutRoute
-  '/projects': typeof AuthedProjectsRoute
   '/': typeof AuthedIndexRoute
+  '/projects/$slug': typeof AuthedProjectsSlugRoute
+  '/projects': typeof AuthedProjectsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -66,22 +74,36 @@ export interface FileRoutesById {
   '/oauth-callback': typeof OauthCallbackRoute
   '/sign-in': typeof SignInRoute
   '/sign-out': typeof SignOutRoute
-  '/_authed/projects': typeof AuthedProjectsRoute
   '/_authed/': typeof AuthedIndexRoute
+  '/_authed/projects/$slug': typeof AuthedProjectsSlugRoute
+  '/_authed/projects/': typeof AuthedProjectsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/oauth-callback' | '/sign-in' | '/sign-out' | '/projects' | '/'
+  fullPaths:
+    | '/oauth-callback'
+    | '/sign-in'
+    | '/sign-out'
+    | '/'
+    | '/projects/$slug'
+    | '/projects'
   fileRoutesByTo: FileRoutesByTo
-  to: '/oauth-callback' | '/sign-in' | '/sign-out' | '/projects' | '/'
+  to:
+    | '/oauth-callback'
+    | '/sign-in'
+    | '/sign-out'
+    | '/'
+    | '/projects/$slug'
+    | '/projects'
   id:
     | '__root__'
     | '/_authed'
     | '/oauth-callback'
     | '/sign-in'
     | '/sign-out'
-    | '/_authed/projects'
     | '/_authed/'
+    | '/_authed/projects/$slug'
+    | '/_authed/projects/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,24 +150,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedIndexRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/projects': {
-      id: '/_authed/projects'
+    '/_authed/projects/': {
+      id: '/_authed/projects/'
       path: '/projects'
       fullPath: '/projects'
-      preLoaderRoute: typeof AuthedProjectsRouteImport
+      preLoaderRoute: typeof AuthedProjectsIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/projects/$slug': {
+      id: '/_authed/projects/$slug'
+      path: '/projects/$slug'
+      fullPath: '/projects/$slug'
+      preLoaderRoute: typeof AuthedProjectsSlugRouteImport
       parentRoute: typeof AuthedRoute
     }
   }
 }
 
 interface AuthedRouteChildren {
-  AuthedProjectsRoute: typeof AuthedProjectsRoute
   AuthedIndexRoute: typeof AuthedIndexRoute
+  AuthedProjectsSlugRoute: typeof AuthedProjectsSlugRoute
+  AuthedProjectsIndexRoute: typeof AuthedProjectsIndexRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
-  AuthedProjectsRoute: AuthedProjectsRoute,
   AuthedIndexRoute: AuthedIndexRoute,
+  AuthedProjectsSlugRoute: AuthedProjectsSlugRoute,
+  AuthedProjectsIndexRoute: AuthedProjectsIndexRoute,
 }
 
 const AuthedRouteWithChildren =

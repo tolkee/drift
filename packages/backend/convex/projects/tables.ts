@@ -6,8 +6,11 @@ export default {
     name: v.string(),
     description: v.string(),
     tags: v.array(v.string()),
+    slug: v.string(),
     userId: v.string(),
-  }).index("by_user", ["userId"]),
+  })
+    .index("by_user", ["userId"])
+    .index("by_slug_user", ["slug", "userId"]),
   columns: defineTable({
     name: v.string(),
     rank: v.number(),
@@ -17,7 +20,7 @@ export default {
     name: v.string(),
     rank: v.number(),
     description: v.optional(v.string()),
-    tags: v.optional(v.array(v.string())),
+    tags: v.array(v.string()),
     userId: v.string(),
     projectId: v.id("projects"),
     completed: v.boolean(),
@@ -26,4 +29,9 @@ export default {
     .index("by_user", ["userId"])
     .index("by_project", ["projectId"])
     .index("by_column", ["columnId"]),
+  projectTagsRef: defineTable({
+    name: v.string(),
+    color: v.string(),
+    userId: v.string(),
+  }).index("by_user", ["userId"]),
 };
