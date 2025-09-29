@@ -15,6 +15,7 @@ import {
   EmptyPageTitle,
 } from "@/modules/global-layout/empty-page";
 import { Page } from "@/modules/global-layout/page-layout";
+import { ProjectKanban } from "@/modules/projects/components/project-kanban";
 
 export const Route = createFileRoute("/_authed/projects/$slug")({
   component: RouteComponent,
@@ -35,13 +36,13 @@ export const Route = createFileRoute("/_authed/projects/$slug")({
 
 function RouteComponent() {
   const { slug } = Route.useParams();
-  const { data: project } = useSuspenseQuery(
+  const { data: fullProject } = useSuspenseQuery(
     convexQuery(api.projects.queries.getFullProject, {
       slug,
     }),
   );
 
-  if (!project)
+  if (!fullProject)
     return (
       <EmptyPage
         breadcrumbs={[
@@ -76,10 +77,10 @@ function RouteComponent() {
     <Page
       breadcrumbs={[
         { label: "Projects", href: "/projects" },
-        { label: project.name, href: `/projects/${project.slug}` },
+        { label: fullProject.name, href: `/projects/${fullProject.slug}` },
       ]}
     >
-      {JSON.stringify(project)}
+      <ProjectKanban />
     </Page>
   );
 }

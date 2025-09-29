@@ -10,7 +10,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { GithubButton } from "@/modules/global-layout/github-button";
 import { ModeToggle } from "@/modules/global-layout/theme-toggle";
 
 type PageProps = {
@@ -56,15 +55,10 @@ export function Page({ children, breadcrumbs, className }: PageProps) {
           </h1>
         </div>
         <div className="flex items-center gap-2 mr-4">
-          <GithubButton />
-          <Separator
-            orientation="vertical"
-            className="data-[orientation=vertical]:h-4"
-          />
           <ModeToggle />
         </div>
       </header>
-      <main className={cn("px-4 md:px-8 py-6 md:py-8", className)}>
+      <main className={cn("px-4 md:px-8 py-6 md:py-8 flex-1", className)}>
         {children}
       </main>
     </div>
