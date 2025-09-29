@@ -7,7 +7,8 @@
     "lint": "biome lint .",
     "lint:fix": "biome lint . --write",
     "quality": "biome check .",
-    "quality:fix": "biome check . --write"
+    "quality:fix": "biome check . --write",
+    "comp": "pnpm --filter=web comp"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",

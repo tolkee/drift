@@ -1,5 +1,6 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@drift/backend/convex/api";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageLayout } from "@/modules/global-layout/page-layout";
 
@@ -7,19 +8,27 @@ export const Route = createFileRoute("/_authed/projects/$slug")({
   component: RouteComponent,
   pendingComponent: () => <div>Loading...</div>,
   loader: async ({ context: { queryClient }, params }) => {
-    const project = await queryClient.ensureQueryData(
-      convexQuery(api.projects.queries.getFullProject, {
-        slug: params.slug,
-      }),
-    );
-
-    return { project };
+    Promise.all([
+      await queryClient.prefetchQuery(
+        convexQuery(api.projects.queries.getFullProject, {
+          slug: params.slug,
+        }),
+      ),
+      await queryClient.prefetchQuery(
+        convexQuery(api.projects.queries.getProjectTagsRef, {}),
+      ),
+    ]);
   },
   errorComponent: ({ error }) => <div>{error.message}</div>,
 });
 
 function RouteComponent() {
-  const { project } = Route.useLoaderData();
+  const { slug } = Route.useParams();
+  const { data: project } = useSuspenseQuery(
+    convexQuery(api.projects.queries.getFullProject, {
+      slug,
+    }),
+  );
 
   const breadcrumbs = [
     { label: "Projects", href: "/projects" },

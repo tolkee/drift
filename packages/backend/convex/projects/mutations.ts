@@ -54,3 +54,18 @@ export const deleteProject = mutation({
     return await ctx.db.delete(project._id);
   },
 });
+
+export const addProjectTagRef = mutation({
+  args: {
+    name: v.string(),
+    color: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+
+    return await ctx.db.insert("projectTagsRef", {
+      ...args,
+      userId,
+    });
+  },
+});

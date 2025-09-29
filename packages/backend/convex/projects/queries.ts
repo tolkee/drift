@@ -15,6 +15,17 @@ export const getProjects = query({
   },
 });
 
+export const getProjectById = query({
+  args: {
+    id: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const project = await ctx.db.get(args.id);
+
+    return project;
+  },
+});
+
 export const getFullProject = query({
   args: {
     slug: v.string(),
@@ -40,6 +51,16 @@ export const getFullProject = query({
         tasks: tasks.filter((task) => task.columnId === column._id),
       })),
     };
+  },
+});
+
+export const getProjectTagsRef = query({
+  handler: async (ctx) => {
+    const userId = await getUserId(ctx);
+    return await ctx.db
+      .query("projectTagsRef")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
   },
 });
 

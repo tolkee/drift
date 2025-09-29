@@ -1,55 +1,127 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@drift/backend/convex/api";
+import type { DataModel } from "@drift/backend/convex/dataModel";
+import { IconFolder, IconPlus } from "@tabler/icons-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMutation } from "convex/react";
+import { createFileRoute } from "@tanstack/react-router";
+import { type ComponentProps, useState } from "react";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { PageLayout } from "@/modules/global-layout/page-layout";
+import { ProjectCard } from "@/modules/projects/components/project-card";
+import { CreateProjectModal } from "@/modules/projects/modals/create-project-modal";
+import { DeleteProjectModal } from "@/modules/projects/modals/delete-project-modal";
+import { EditProjectModal } from "@/modules/projects/modals/edit-project-modal";
+
+const BREADCRUMBS = [{ label: "Projects", href: "/projects" }];
 
 export const Route = createFileRoute("/_authed/projects/")({
   component: RouteComponent,
-  pendingComponent: () => <div>Loading...</div>,
   loader: async ({ context: { queryClient } }) => {
-    await queryClient.prefetchQuery(
-      convexQuery(api.projects.queries.getProjects, {}),
-    );
+    Promise.all([
+      await queryClient.prefetchQuery(
+        convexQuery(api.projects.queries.getProjects, {}),
+      ),
+      await queryClient.prefetchQuery(
+        convexQuery(api.projects.queries.getProjectTagsRef, {}),
+      ),
+    ]);
   },
+  validateSearch: z.object({
+    createFormOpen: z.boolean().optional(),
+  }),
 });
+
+function CreateProjectButton(props: ComponentProps<typeof Button>) {
+  return (
+    <Button variant="default" {...props}>
+      <IconPlus />
+      Create Project
+    </Button>
+  );
+}
 
 function RouteComponent() {
   const { data: projects } = useSuspenseQuery(
     convexQuery(api.projects.queries.getProjects, {}),
   );
 
-  const createProject = useMutation(api.projects.mutations.createProject);
-  const deleteProject = useMutation(api.projects.mutations.deleteProject);
+  const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
+  const [isDeleteAckProjectModalOpen, setIsDeleteAckProjectModalOpen] =
+    useState(false);
+  const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] =
+    useState(false);
+  const [projectBeingInteractedWith, setProjectBeingInteractedWith] = useState<
+    DataModel["projects"]["document"] | null
+  >(null);
+
+  if (!projects.length)
+    return (
+      <PageLayout
+        className="flex flex-col gap-10 justify-center items-center w-full h-full flex-grow"
+        breadcrumbs={BREADCRUMBS}
+      >
+        <div className="flex flex-col gap-2 items-center text-center">
+          <IconFolder className="size-10" />
+          <h1 className="text-2xl font-bold">Create your first project</h1>
+          <p className="text-sm text-muted-foreground">
+            Projects are the main way to track, organize and work on your life
+            goals/projects.
+          </p>
+        </div>
+        <CreateProjectModal
+          open={isCreateProjectModalOpen}
+          onOpenChange={setIsCreateProjectModalOpen}
+        >
+          <CreateProjectButton />
+        </CreateProjectModal>
+      </PageLayout>
+    );
 
   return (
-    <PageLayout breadcrumbs={[{ label: "Projects", href: "/projects" }]}>
-      <div className="text-center flex flex-col items-center justify-center gap-4">
+    <PageLayout breadcrumbs={BREADCRUMBS}>
+      <CreateProjectModal
+        open={isCreateProjectModalOpen}
+        onOpenChange={setIsCreateProjectModalOpen}
+      >
+        <CreateProjectButton className="mb-6 md:mb-8 w-full md:w-fit" />
+      </CreateProjectModal>
+      <div className="flex flex-wrap gap-8">
         {projects.map((project) => (
-          <div key={project._id}>
-            <Link to="/projects/$slug" params={{ slug: project.slug }}>
-              {project.name}
-            </Link>
-            <button
-              type="button"
-              className="bg-red-500 text-white p-2 rounded-md"
-              onClick={() => deleteProject({ id: project._id })}
-            >
-              Delete
-            </button>
-          </div>
+          <ProjectCard
+            key={project._id}
+            project={project}
+            onEditProject={(project) => {
+              setIsEditProjectModalOpen(true);
+              setProjectBeingInteractedWith(project);
+            }}
+            onDeleteProject={(project) => {
+              setIsDeleteAckProjectModalOpen(true);
+              setProjectBeingInteractedWith(project);
+            }}
+          />
         ))}
-        <Button
-          variant="default"
-          onClick={() =>
-            createProject({ name: "Test", description: "Test", tags: ["Test"] })
-          }
-        >
-          Create Project
-        </Button>
       </div>
+      {projectBeingInteractedWith && (
+        <EditProjectModal
+          project={projectBeingInteractedWith}
+          open={isEditProjectModalOpen}
+          onOpenChange={(open) => {
+            setIsEditProjectModalOpen(open);
+            if (!open) setProjectBeingInteractedWith(null);
+          }}
+        />
+      )}
+      {projectBeingInteractedWith && (
+        <DeleteProjectModal
+          project={projectBeingInteractedWith}
+          open={isDeleteAckProjectModalOpen}
+          onOpenChange={(open) => {
+            setIsDeleteAckProjectModalOpen(open);
+            if (!open) setProjectBeingInteractedWith(null);
+          }}
+        />
+      )}
     </PageLayout>
   );
 }

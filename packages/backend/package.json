@@ -10,6 +10,9 @@
     "./convex/api": {
       "types": "./convex/_generated/api.d.ts",
       "default": "./convex/_generated/api.js"
+    },
+    "./convex/dataModel": {
+      "types": "./convex/_generated/dataModel.d.ts"
     }
   },
   "author": "",
