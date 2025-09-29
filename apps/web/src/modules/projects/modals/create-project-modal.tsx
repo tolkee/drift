@@ -153,7 +153,9 @@ export function CreateProjectModal({
             />
           </ProjectEditionModalFormFields>
           <ProjectEditionModalFooter>
-            <Button type="submit">Create</Button>
+            <Button type="submit" disabled={!form.formState.isValid}>
+              Create
+            </Button>
             <ProjectEditionModalClose>
               <Button variant="outline">Close</Button>
             </ProjectEditionModalClose>

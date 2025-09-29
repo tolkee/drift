@@ -1,8 +1,9 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@drift/backend/convex/api";
-import { IconArrowLeft, IconFolderOff } from "@tabler/icons-react";
+import { IconArrowLeft, IconFolderOff, IconPlus } from "@tabler/icons-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { unSlugify } from "@/lib/utils";
 import {
@@ -16,6 +17,7 @@ import {
 } from "@/modules/global-layout/empty-page";
 import { Page } from "@/modules/global-layout/page-layout";
 import { ProjectKanban } from "@/modules/projects/components/project-kanban";
+import { CreateColumnModal } from "@/modules/projects/modals/create-column-modal";
 
 export const Route = createFileRoute("/_authed/projects/$slug")({
   component: RouteComponent,
@@ -41,6 +43,8 @@ function RouteComponent() {
       slug,
     }),
   );
+
+  const [isCreateColumnModalOpen, setIsCreateColumnModalOpen] = useState(false);
 
   if (!fullProject)
     return (
@@ -80,7 +84,18 @@ function RouteComponent() {
         { label: fullProject.name, href: `/projects/${fullProject.slug}` },
       ]}
     >
-      <ProjectKanban />
+      <CreateColumnModal
+        projectId={fullProject._id}
+        open={isCreateColumnModalOpen}
+        onOpenChange={setIsCreateColumnModalOpen}
+        rank={fullProject.columns.length}
+      >
+        <Button className="mb-6 md:mb-8 w-full md:w-fit">
+          <IconPlus />
+          Create Column
+        </Button>
+      </CreateColumnModal>
+      <ProjectKanban fullProject={fullProject} />
     </Page>
   );
 }

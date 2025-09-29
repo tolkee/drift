@@ -24,7 +24,7 @@ export const createProject = mutation({
     });
 
     // create default columns
-    const [, doneColumnId] = await Promise.all(
+    const [todoColumnId, inProgressColumnId, doneColumnId] = await Promise.all(
       DEFAULT_COLUMNS.map((column) =>
         ctx.db.insert("columns", {
           ...column,
@@ -32,6 +32,36 @@ export const createProject = mutation({
         }),
       ),
     );
+
+    await ctx.db.insert("tasks", {
+      name: "Task 1",
+      projectId,
+      columnId: todoColumnId,
+      completed: false,
+      tags: [],
+      userId: userId,
+      rank: 0,
+    });
+
+    await ctx.db.insert("tasks", {
+      name: "Task 2",
+      projectId,
+      columnId: inProgressColumnId,
+      completed: false,
+      tags: [],
+      userId: userId,
+      rank: 0,
+    });
+
+    await ctx.db.insert("tasks", {
+      name: "Task 3",
+      projectId,
+      columnId: doneColumnId,
+      completed: true,
+      tags: [],
+      userId: userId,
+      rank: 0,
+    });
 
     // set what column for that project is the done column
     await ctx.db.patch(projectId, {
@@ -91,6 +121,25 @@ export const addProjectTagRef = mutation({
     return await ctx.db.insert("projectTagsRef", {
       ...args,
       userId,
+    });
+  },
+});
+
+export const createColumn = mutation({
+  args: {
+    name: v.string(),
+    rank: v.number(),
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const project = await getProjectByIdWithAccessGuards(ctx, args.projectId);
+
+    if (!project) {
+      throw new ProjectNotFoundError();
+    }
+
+    return await ctx.db.insert("columns", {
+      ...args,
     });
   },
 });

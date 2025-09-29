@@ -154,7 +154,9 @@ export function EditProjectModal({
             />
           </ProjectEditionModalFormFields>
           <ProjectEditionModalFooter>
-            <Button type="submit">Save</Button>
+            <Button type="submit" disabled={!form.formState.isValid}>
+              Save
+            </Button>
             <ProjectEditionModalClose>
               <Button variant="outline">Close</Button>
             </ProjectEditionModalClose>

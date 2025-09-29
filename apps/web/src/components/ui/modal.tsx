@@ -24,7 +24,7 @@ import { Form } from "@/components/ui/form";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
-function ProjectEditionModal(props: {
+function Modal(props: {
   children?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -36,13 +36,13 @@ function ProjectEditionModal(props: {
   return <Dialog {...props} />;
 }
 
-function ProjectEditionModalTrigger(props: { children?: React.ReactNode }) {
+function ModalTrigger(props: { children?: React.ReactNode }) {
   const isMobile = useIsMobile();
   if (isMobile) return <DrawerTrigger {...props} asChild />;
   return <DialogTrigger {...props} asChild />;
 }
 
-function ProjectEditionModalContent(props: {
+function ModalContent(props: {
   children?: React.ReactNode;
   className?: string;
 }) {
@@ -57,15 +57,12 @@ function ProjectEditionModalContent(props: {
   return (
     <DialogContent
       {...props}
-      className={cn(
-        "flex gap-10 items-center md:flex-col-reverse lg:flex-row md:max-w-[700px] lg:max-w-[1200px]",
-        props.className,
-      )}
+      className={cn("flex gap-10 items-center flex-col", props.className)}
     />
   );
 }
 
-function ProjectEditionModalForm<TFormSchema extends FieldValues>({
+function ModalForm<TFormSchema extends FieldValues>({
   children,
   form,
   onSubmit,
@@ -94,7 +91,7 @@ function ProjectEditionModalForm<TFormSchema extends FieldValues>({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("flex-1 min-w-[600px]", className)}
+        className={cn("flex-1 w-full", className)}
       >
         {children}
       </form>
@@ -102,7 +99,7 @@ function ProjectEditionModalForm<TFormSchema extends FieldValues>({
   );
 }
 
-function ProjectEditionModalHeader(props: {
+function ModalHeader(props: {
   children?: React.ReactNode;
   className?: string;
 }) {
@@ -111,16 +108,13 @@ function ProjectEditionModalHeader(props: {
   return <DialogHeader {...props} />;
 }
 
-function ProjectEditionModalTitle(props: {
-  children?: React.ReactNode;
-  className?: string;
-}) {
+function ModalTitle(props: { children?: React.ReactNode; className?: string }) {
   const isMobile = useIsMobile();
   if (isMobile) return <DrawerTitle {...props} />;
   return <DialogTitle {...props} />;
 }
 
-function ProjectEditionModalDescription(props: {
+function ModalDescription(props: {
   children?: React.ReactNode;
   className?: string;
 }) {
@@ -129,10 +123,7 @@ function ProjectEditionModalDescription(props: {
   return <DialogDescription {...props} />;
 }
 
-function ProjectEditionModalFormFields({
-  className,
-  ...props
-}: ComponentProps<"div">) {
+function ModalFormFields({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn("space-y-8 p-4 md:p-0 2xl:mt-6", className)}
@@ -141,7 +132,7 @@ function ProjectEditionModalFormFields({
   );
 }
 
-function ProjectEditionModalFooter(props: {
+function ModalFooter(props: {
   children?: React.ReactNode;
   className?: string;
 }) {
@@ -150,61 +141,26 @@ function ProjectEditionModalFooter(props: {
   return (
     <DialogFooter
       {...props}
-      className={cn("flex-row-reverse justify-start", props.className)}
+      className={cn("flex-row-reverse justify-start mt-6", props.className)}
     />
   );
 }
 
-function ProjectEditionModalClose(props: {
-  children?: React.ReactNode;
-  className?: string;
-}) {
+function ModalClose(props: { children?: React.ReactNode; className?: string }) {
   const isMobile = useIsMobile();
   if (isMobile) return <DrawerClose {...props} asChild />;
   return <DialogClose {...props} asChild />;
 }
 
-function ProjectEditionModalPreview({
-  className,
-  ...props
-}: ComponentProps<"div">) {
-  return (
-    <div
-      {...props}
-      className={cn(
-        "p-8 bg-muted w-full flex justify-center items-center md:rounded-lg my-4 md:mx-auto md:my-8 md:max-w-md 2xl:hidden",
-        className,
-      )}
-    />
-  );
-}
-
-function ProjectEditionModalPreviewForBigScreen({
-  className,
-  ...props
-}: ComponentProps<"div">) {
-  return (
-    <div
-      className={cn(
-        "w-full justify-center items-center hidden 2xl:flex bg-muted rounded-lg p-8",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
 export {
-  ProjectEditionModalPreview,
-  ProjectEditionModalPreviewForBigScreen,
-  ProjectEditionModalFormFields,
-  ProjectEditionModal,
-  ProjectEditionModalTrigger,
-  ProjectEditionModalContent,
-  ProjectEditionModalHeader,
-  ProjectEditionModalTitle,
-  ProjectEditionModalDescription,
-  ProjectEditionModalFooter,
-  ProjectEditionModalClose,
-  ProjectEditionModalForm,
+  ModalFormFields,
+  Modal,
+  ModalTrigger,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalDescription,
+  ModalFooter,
+  ModalClose,
+  ModalForm,
 };

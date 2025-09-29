@@ -1,8 +1,8 @@
 "use client";
 
+import type { api } from "@drift/backend/convex/api";
 import { IconDotsVertical, IconPlus } from "@tabler/icons-react";
 import * as React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,21 +19,18 @@ import {
 import { cn } from "@/lib/utils";
 
 interface Task {
-  id: string;
-  title: string;
-  priority: "low" | "medium" | "high";
+  _id: string;
+  name: string;
   description?: string;
-  assignee?: string;
-  assigneeAvatar?: string;
-  dueDate?: string;
+  tags: string[];
+  userId: string;
+  projectId: string;
+  completed: boolean;
+  columnId: string;
+  rank: number;
 }
 
-const COLUMN_TITLES: Record<string, string> = {
-  backlog: "Backlog",
-  inProgress: "In Progress",
-  review: "Review",
-  done: "Done",
-};
+// Column titles will be dynamically set from the project data
 
 interface TaskCardProps
   extends Omit<React.ComponentProps<typeof KanbanItem>, "value" | "children"> {
@@ -46,33 +43,42 @@ function TaskCard({ task, asHandle, ...props }: TaskCardProps) {
     <div className="rounded-md border bg-card p-3 shadow-xs">
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center justify-between gap-2">
-          <span className="line-clamp-1 font-medium text-sm">{task.title}</span>
-          <Badge className="pointer-events-none h-5 rounded-sm px-1.5 text-[11px] capitalize shrink-0">
-            {task.priority}
-          </Badge>
-        </div>
-        <div className="flex items-center justify-between text-muted-foreground text-xs">
-          {task.assignee && (
-            <div className="flex items-center gap-1">
-              <Avatar className="size-4">
-                <AvatarImage src={task.assigneeAvatar} />
-                <AvatarFallback>{task.assignee.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <span className="line-clamp-1">{task.assignee}</span>
-            </div>
-          )}
-          {task.dueDate && (
-            <time className="text-[10px] tabular-nums whitespace-nowrap">
-              {task.dueDate}
-            </time>
+          <span className="line-clamp-1 font-medium text-sm">{task.name}</span>
+          {task.completed && (
+            <Badge className="pointer-events-none h-5 rounded-sm px-1.5 text-[11px] capitalize shrink-0 bg-green-100 text-green-800">
+              Done
+            </Badge>
           )}
         </div>
+        {task.description && (
+          <p className="text-muted-foreground text-xs line-clamp-2">
+            {task.description}
+          </p>
+        )}
+        {task.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {task.tags.slice(0, 3).map((tag) => (
+              <Badge
+                key={tag}
+                variant="secondary"
+                className="text-[10px] px-1 py-0"
+              >
+                {tag}
+              </Badge>
+            ))}
+            {task.tags.length > 3 && (
+              <Badge variant="secondary" className="text-[10px] px-1 py-0">
+                +{task.tags.length - 3}
+              </Badge>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 
   return (
-    <KanbanItem value={task.id} {...props}>
+    <KanbanItem value={task._id} {...props}>
       {asHandle ? (
         <KanbanItemHandle>{cardContent}</KanbanItemHandle>
       ) : (
@@ -85,12 +91,14 @@ function TaskCard({ task, asHandle, ...props }: TaskCardProps) {
 interface TaskColumnProps
   extends Omit<React.ComponentProps<typeof KanbanColumn>, "children"> {
   tasks: Task[];
+  columnTitle: string;
   isOverlay?: boolean;
 }
 
 function TaskColumn({
   value,
   tasks,
+  columnTitle,
   isOverlay,
   className,
   ...props
@@ -111,7 +119,7 @@ function TaskColumn({
     >
       <div className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-2.5">
-          <span className="font-medium text-sm">{COLUMN_TITLES[value]}</span>
+          <span className="font-medium text-sm">{columnTitle}</span>
           <span className="text-muted-foreground text-xs">{tasks.length}</span>
         </div>
 
@@ -126,7 +134,7 @@ function TaskColumn({
       </div>
       <KanbanColumnContent value={value} className="flex flex-col gap-4 p-0.5">
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} asHandle={!isOverlay} />
+          <TaskCard key={task._id} task={task} asHandle={!isOverlay} />
         ))}
         {!isDragging && (
           <Button
@@ -141,82 +149,62 @@ function TaskColumn({
   );
 }
 
-export function ProjectKanban() {
-  const [columns, setColumns] = React.useState<Record<string, Task[]>>({
-    backlog: [
-      {
-        id: "1",
-        title: "Add authentication",
-        priority: "high",
-        assignee: "John Doe",
-        assigneeAvatar: "https://randomuser.me/api/portraits/men/1.jpg",
-        dueDate: "Jan 10, 2025",
-      },
-      {
-        id: "2",
-        title: "Create API endpoints",
-        priority: "medium",
-        assignee: "Jane Smith",
-        assigneeAvatar: "https://randomuser.me/api/portraits/women/2.jpg",
-        dueDate: "Jan 15, 2025",
-      },
-      {
-        id: "3",
-        title: "Write documentation",
-        priority: "low",
-        assignee: "Bob Johnson",
-        assigneeAvatar: "https://randomuser.me/api/portraits/men/3.jpg",
-        dueDate: "Jan 20, 2025",
-      },
-    ],
-    inProgress: [
-      {
-        id: "4",
-        title: "Design system updates",
-        priority: "high",
-        assignee: "Alice Brown",
-        assigneeAvatar: "https://randomuser.me/api/portraits/women/4.jpg",
-        dueDate: "Aug 25, 2025",
-      },
-      {
-        id: "5",
-        title: "Implement dark mode",
-        priority: "medium",
-        assignee: "Charlie Wilson",
-        assigneeAvatar: "https://randomuser.me/api/portraits/men/5.jpg",
-        dueDate: "Aug 25, 2025",
-      },
-    ],
-    done: [
-      {
-        id: "7",
-        title: "Setup project",
-        priority: "high",
-        assignee: "Eve Davis",
-        assigneeAvatar: "https://randomuser.me/api/portraits/women/6.jpg",
-        dueDate: "Sep 25, 2025",
-      },
-      {
-        id: "8",
-        title: "Initial commit",
-        priority: "low",
-        assignee: "Frank White",
-        assigneeAvatar: "https://randomuser.me/api/portraits/men/7.jpg",
-        dueDate: "Sep 20, 2025",
-      },
-    ],
-  });
+export function ProjectKanban({
+  fullProject,
+}: {
+  fullProject: typeof api.projects.queries.getFullProject._returnType;
+}) {
+  // Transform fullProject data into kanban format
+  const initialColumns = React.useMemo(() => {
+    if (!fullProject) return {};
+
+    const columnsData: Record<string, Task[]> = {};
+
+    // Sort columns by rank
+    const sortedColumns = [...fullProject.columns].sort(
+      (a, b) => a.rank - b.rank,
+    );
+
+    // Initialize columns with their tasks
+    for (const column of sortedColumns) {
+      // Sort tasks by rank within each column
+      const sortedTasks = [...column.tasks].sort((a, b) => a.rank - b.rank);
+      columnsData[column._id] = sortedTasks;
+    }
+
+    return columnsData;
+  }, [fullProject]);
+
+  const [columns, setColumns] = React.useState(initialColumns);
+
+  // Create column title mapping
+  const columnTitles = React.useMemo(() => {
+    if (!fullProject) return {};
+
+    const titles: Record<string, string> = {};
+    for (const column of fullProject.columns) {
+      titles[column._id] = column.name;
+    }
+    return titles;
+  }, [fullProject]);
+
+  if (!fullProject) return null;
 
   return (
     <Kanban
       value={columns}
       onValueChange={setColumns}
-      getItemValue={(item) => item.id}
+      getItemValue={(item) => item._id}
       className="h-full"
     >
       <KanbanBoard>
-        {Object.entries(columns).map(([columnValue, tasks]) => (
-          <TaskColumn key={columnValue} value={columnValue} tasks={tasks} />
+        {Object.entries(columns).map(([columnId, tasks]) => (
+          <TaskColumn
+            key={columnId}
+            value={columnId}
+            tasks={tasks}
+            columnTitle={columnTitles[columnId] || "Unknown"}
+          />
         ))}
       </KanbanBoard>
       <KanbanOverlay>
