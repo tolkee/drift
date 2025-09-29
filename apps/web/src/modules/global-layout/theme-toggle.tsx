@@ -1,19 +1,45 @@
-import { IconShadow } from "@tabler/icons-react";
+import {
+  IconDeviceDesktop,
+  IconMoonFilled,
+  IconSunFilled,
+} from "@tabler/icons-react";
 import type { ComponentProps } from "react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/modules/global-layout/theme-provider";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  THEMES,
+  type Theme,
+  useTheme,
+} from "@/modules/global-layout/theme-provider";
+
+const THEME_ICONS: { [key in Theme]: React.ReactNode } = {
+  dark: <IconMoonFilled />,
+  light: <IconSunFilled />,
+  system: <IconDeviceDesktop />,
+};
 
 export function ModeToggle(props: ComponentProps<typeof Button>) {
   const { setTheme, theme } = useTheme();
 
   return (
-    <Button
-      variant="ghost"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      size="icon"
-      {...props}
-    >
-      <IconShadow className="size-5" />
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="ghost"
+          onClick={() =>
+            setTheme(THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length])
+          }
+          size="icon"
+          {...props}
+        >
+          {THEME_ICONS[theme]}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>Toggle theme</TooltipContent>
+    </Tooltip>
   );
 }
