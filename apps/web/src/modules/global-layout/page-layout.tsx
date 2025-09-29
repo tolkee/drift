@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { ModeToggle } from "@/components/theme-toggle";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,6 +10,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { GithubButton } from "@/modules/global-layout/github-button";
+import { ModeToggle } from "@/modules/global-layout/theme-toggle";
 
 type PageLayoutProps = {
   className?: string;
@@ -58,7 +59,14 @@ export function PageLayout({
             </Breadcrumb>
           </h1>
         </div>
-        <ModeToggle className="mr-4" />
+        <div className="flex items-center gap-2 mr-4">
+          <GithubButton />
+          <Separator
+            orientation="vertical"
+            className="data-[orientation=vertical]:h-4"
+          />
+          <ModeToggle />
+        </div>
       </header>
       <main className={cn("px-4 md:px-8 py-6 md:py-8", className)}>
         {children}

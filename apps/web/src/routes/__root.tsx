@@ -2,9 +2,9 @@ import type { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import type { ConvexReactClient } from "convex/react";
 import { Toaster } from "sonner";
-import { ThemeProvider } from "@/components/theme-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
+import { ThemeProvider } from "@/modules/global-layout/theme-provider";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
