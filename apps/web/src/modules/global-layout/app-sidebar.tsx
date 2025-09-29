@@ -24,6 +24,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
+              size="lg"
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link to="/">
