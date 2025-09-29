@@ -27,7 +27,7 @@ function ProjectCard({
   onDeleteProject: (project: DataModel["projects"]["document"]) => void;
 }) {
   return (
-    <ProjectCardWrapper key={project._id} {...props}>
+    <ProjectCardWrapper key={project._id} {...props} asChild>
       <Link to={`/projects/$slug`} params={{ slug: project.slug }}>
         <ProjectCardMenu
           project={project}
