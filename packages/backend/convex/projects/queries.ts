@@ -1,32 +1,18 @@
 import { v } from "convex/values";
-import { query } from "../_generated/server";
-import { getUserId } from "../auth/utils";
-import { getProjectBySlugWithAccessGuards } from "./utils";
+import { authenticatedQuery } from "../auth/customs";
+import { getProjectBySlugWithAccessGuards } from "./lib/utils";
 
-export const getProjects = query({
+export const getProjects = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getUserId(ctx);
-
     return await ctx.db
       .query("projects")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .collect();
   },
 });
 
-export const getProjectById = query({
-  args: {
-    id: v.id("projects"),
-  },
-  handler: async (ctx, args) => {
-    const project = await ctx.db.get(args.id);
-
-    return project;
-  },
-});
-
-export const getFullProject = query({
+export const getFullProject = authenticatedQuery({
   args: {
     slug: v.string(),
   },
@@ -58,12 +44,11 @@ export const getFullProject = query({
   },
 });
 
-export const getProjectTagsRef = query({
+export const getProjectTagsRef = authenticatedQuery({
   handler: async (ctx) => {
-    const userId = await getUserId(ctx);
     return await ctx.db
       .query("projectTagsRef")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .collect();
   },
 });

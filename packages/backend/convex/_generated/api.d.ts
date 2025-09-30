@@ -9,15 +9,19 @@
  */
 
 import type * as auth_auth from "../auth/auth.js";
-import type * as auth_queries from "../auth/queries.js";
+import type * as auth_customs from "../auth/customs.js";
+import type * as auth_errors from "../auth/errors.js";
+import type * as auth_guards from "../auth/guards.js";
 import type * as auth_utils from "../auth/utils.js";
 import type * as http from "../http.js";
-import type * as projects_constants from "../projects/constants.js";
-import type * as projects_errors from "../projects/errors.js";
+import type * as projects_lib_constants from "../projects/lib/constants.js";
+import type * as projects_lib_customs from "../projects/lib/customs.js";
+import type * as projects_lib_errors from "../projects/lib/errors.js";
+import type * as projects_lib_guards from "../projects/lib/guards.js";
+import type * as projects_lib_utils from "../projects/lib/utils.js";
 import type * as projects_mutations from "../projects/mutations.js";
 import type * as projects_queries from "../projects/queries.js";
 import type * as projects_tables from "../projects/tables.js";
-import type * as projects_utils from "../projects/utils.js";
 import type * as types from "../types.js";
 
 import type {
@@ -36,15 +40,19 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   "auth/auth": typeof auth_auth;
-  "auth/queries": typeof auth_queries;
+  "auth/customs": typeof auth_customs;
+  "auth/errors": typeof auth_errors;
+  "auth/guards": typeof auth_guards;
   "auth/utils": typeof auth_utils;
   http: typeof http;
-  "projects/constants": typeof projects_constants;
-  "projects/errors": typeof projects_errors;
+  "projects/lib/constants": typeof projects_lib_constants;
+  "projects/lib/customs": typeof projects_lib_customs;
+  "projects/lib/errors": typeof projects_lib_errors;
+  "projects/lib/guards": typeof projects_lib_guards;
+  "projects/lib/utils": typeof projects_lib_utils;
   "projects/mutations": typeof projects_mutations;
   "projects/queries": typeof projects_queries;
   "projects/tables": typeof projects_tables;
-  "projects/utils": typeof projects_utils;
   types: typeof types;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

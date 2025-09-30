@@ -26,13 +26,20 @@ export default {
     projectId: v.id("projects"),
     completed: v.boolean(),
     columnId: v.id("columns"),
+    updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
     .index("by_project", ["projectId"])
-    .index("by_column", ["columnId"]),
+    .index("by_column", ["columnId"])
+    .index("by_project_column", ["projectId", "columnId"]),
   projectTagsRef: defineTable({
     name: v.string(),
     color: v.string(),
     userId: v.string(),
   }).index("by_user", ["userId"]),
+  projectTaskTagsRef: defineTable({
+    name: v.string(),
+    color: v.string(),
+    projectId: v.id("projects"),
+  }).index("by_project", ["projectId"]),
 };
