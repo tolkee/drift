@@ -52,3 +52,15 @@ export const getProjectTagsRef = authenticatedQuery({
       .collect();
   },
 });
+
+export const getProjectTaskTagsRef = authenticatedQuery({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("projectTaskTagsRef")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .collect();
+  },
+});
