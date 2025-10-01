@@ -74,38 +74,55 @@ function ProjectCardPreview({
   );
 }
 
-function ProjectCardContent({
-  className,
-  ...props
-}: ComponentProps<typeof CardContent>) {
-  return (
-    <CardContent className={cn("flex flex-col gap-2", className)} {...props} />
-  );
-}
-
 function ProjectCardWrapper({
   className,
   ...props
 }: ComponentProps<typeof Card>) {
   return (
     <Card
-      className={cn("w-full max-w-lg hover:border-primary relative", className)}
+      className={cn(
+        "w-full relative bg-accent/30 hover:bg-accent/40 rounded-sm py-5 cursor-default",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function ProjectCardContent({
+  className,
+  ...props
+}: ComponentProps<typeof CardContent>) {
+  return (
+    <CardContent
+      className={cn(
+        "flex flex-col px-5 w-[95%] h-full justify-between",
+        className,
+      )}
       {...props}
     />
   );
 }
 
 function ProjectCardHeader({ className, ...props }: ComponentProps<"div">) {
-  return <div className="flex flex-col" {...props} />;
+  return <div className="flex flex-col gap-2" {...props} />;
 }
 
 function ProjectCardName({ className, ...props }: ComponentProps<"h3">) {
-  return <h3 className={cn("font-bold", className)} {...props} />;
+  return (
+    <h3
+      className={cn("text-sm font-medium line-clamp-1", className)}
+      {...props}
+    />
+  );
 }
 
 function ProjectCardDescription({ className, ...props }: ComponentProps<"p">) {
   return (
-    <p className={cn("text-sm text-muted-foreground", className)} {...props} />
+    <p
+      className={cn("text-sm text-muted-foreground line-clamp-2", className)}
+      {...props}
+    />
   );
 }
 
@@ -121,7 +138,11 @@ function ProjectCardMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="absolute top-3 right-4">
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          className="absolute top-3 right-4"
+        >
           <IconDotsVertical />
         </Button>
       </DropdownMenuTrigger>

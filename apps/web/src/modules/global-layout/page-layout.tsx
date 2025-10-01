@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Fragment } from "react/jsx-runtime";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -27,8 +28,8 @@ export function Page({ children, breadcrumbs, className }: PageProps) {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
-        <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+      <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) px-4 lg:px-6">
+        <div className="flex w-full items-center gap-1 lg:gap-2">
           <SidebarTrigger className="-ml-1" />
           <Separator
             orientation="vertical"
@@ -38,14 +39,14 @@ export function Page({ children, breadcrumbs, className }: PageProps) {
             <Breadcrumb>
               <BreadcrumbList>
                 {breadcrumbWithoutLast.map((breadcrumb) => (
-                  <>
+                  <Fragment key={breadcrumb.href}>
                     <BreadcrumbItem key={breadcrumb.href}>
                       <BreadcrumbLink asChild>
                         <Link to={breadcrumb.href}>{breadcrumb.label}</Link>
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
-                  </>
+                  </Fragment>
                 ))}
                 <BreadcrumbItem>
                   <BreadcrumbPage>{lastBreadcrumb.label}</BreadcrumbPage>
@@ -54,13 +55,19 @@ export function Page({ children, breadcrumbs, className }: PageProps) {
             </Breadcrumb>
           </h1>
         </div>
-        <div className="flex items-center gap-2 mr-4">
+        <div className="flex items-center gap-2">
           <ModeToggle />
         </div>
       </header>
-      <main className={cn("px-4 md:px-8 py-6 md:py-8 flex-1", className)}>
-        {children}
-      </main>
+      <main className={cn(" flex-1", className)}>{children}</main>
+    </div>
+  );
+}
+
+export function PageSubHeader({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="border-b h-13 md:h-15 flex gap-3 items-center px-4 md:px-6">
+      {children}
     </div>
   );
 }

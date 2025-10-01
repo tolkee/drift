@@ -4,9 +4,10 @@ import type { DataModel } from "@drift/backend/convex/dataModel";
 import { IconFolder, IconPlus } from "@tabler/icons-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { type ComponentProps, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
 import {
   EmptyPage,
   EmptyPageActions,
@@ -16,7 +17,7 @@ import {
   EmptyPageIcon,
   EmptyPageTitle,
 } from "@/modules/global-layout/empty-page";
-import { Page } from "@/modules/global-layout/page-layout";
+import { Page, PageSubHeader } from "@/modules/global-layout/page-layout";
 import { ProjectCard } from "@/modules/projects/components/project-card";
 import { CreateProjectModal } from "@/modules/projects/modals/create-project-modal";
 import { DeleteProjectModal } from "@/modules/projects/modals/delete-project-modal";
@@ -41,16 +42,8 @@ export const Route = createFileRoute("/_authed/projects/")({
   }),
 });
 
-function CreateProjectButton(props: ComponentProps<typeof Button>) {
-  return (
-    <Button variant="default" {...props}>
-      <IconPlus />
-      Create Project
-    </Button>
-  );
-}
-
 function RouteComponent() {
+  const { isMobile } = useSidebar();
   const { data: projects } = useSuspenseQuery(
     convexQuery(api.projects.queries.getProjects, {}),
   );
@@ -83,7 +76,10 @@ function RouteComponent() {
               open={isCreateProjectModalOpen}
               onOpenChange={setIsCreateProjectModalOpen}
             >
-              <CreateProjectButton className="w-fit" />
+              <Button variant="default" className="w-fit">
+                <IconPlus />
+                Create Project
+              </Button>
             </CreateProjectModal>
           </EmptyPageActions>
         </EmptyPageContent>
@@ -92,48 +88,61 @@ function RouteComponent() {
 
   return (
     <Page breadcrumbs={BREADCRUMBS}>
-      <CreateProjectModal
-        open={isCreateProjectModalOpen}
-        onOpenChange={setIsCreateProjectModalOpen}
-      >
-        <CreateProjectButton className="mb-6 md:mb-8 w-full md:w-fit" />
-      </CreateProjectModal>
-      <div className="flex flex-wrap gap-8">
-        {projects.map((project) => (
-          <ProjectCard
-            key={project._id}
-            project={project}
-            onEditProject={(project) => {
-              setIsEditProjectModalOpen(true);
-              setProjectBeingInteractedWith(project);
-            }}
-            onDeleteProject={(project) => {
-              setIsDeleteAckProjectModalOpen(true);
-              setProjectBeingInteractedWith(project);
+      <PageSubHeader>
+        <CreateProjectModal
+          open={isCreateProjectModalOpen}
+          onOpenChange={setIsCreateProjectModalOpen}
+        >
+          <Button variant="outline" size={isMobile ? "xs" : "sm"}>
+            <IconPlus />
+            <span>Create Project</span>
+          </Button>
+        </CreateProjectModal>
+      </PageSubHeader>
+
+      <div className="flex flex-col gap-2 px-4 py-5 md:px-12 md:py-15">
+        <div className="text-sm font-medium text-muted-foreground">
+          All projects
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(400px,1fr))] gap-4">
+          {projects.map((project) => (
+            <ProjectCard
+              className="w-full"
+              key={project._id}
+              project={project}
+              onEditProject={(project) => {
+                setIsEditProjectModalOpen(true);
+                setProjectBeingInteractedWith(project);
+              }}
+              onDeleteProject={(project) => {
+                setIsDeleteAckProjectModalOpen(true);
+                setProjectBeingInteractedWith(project);
+              }}
+            />
+          ))}
+        </div>
+        {projectBeingInteractedWith && (
+          <EditProjectModal
+            project={projectBeingInteractedWith}
+            open={isEditProjectModalOpen}
+            onOpenChange={(open) => {
+              setIsEditProjectModalOpen(open);
+              if (!open) setProjectBeingInteractedWith(null);
             }}
           />
-        ))}
+        )}
+        {projectBeingInteractedWith && (
+          <DeleteProjectModal
+            project={projectBeingInteractedWith}
+            open={isDeleteAckProjectModalOpen}
+            onOpenChange={(open) => {
+              setIsDeleteAckProjectModalOpen(open);
+              if (!open) setProjectBeingInteractedWith(null);
+            }}
+          />
+        )}
       </div>
-      {projectBeingInteractedWith && (
-        <EditProjectModal
-          project={projectBeingInteractedWith}
-          open={isEditProjectModalOpen}
-          onOpenChange={(open) => {
-            setIsEditProjectModalOpen(open);
-            if (!open) setProjectBeingInteractedWith(null);
-          }}
-        />
-      )}
-      {projectBeingInteractedWith && (
-        <DeleteProjectModal
-          project={projectBeingInteractedWith}
-          open={isDeleteAckProjectModalOpen}
-          onOpenChange={(open) => {
-            setIsDeleteAckProjectModalOpen(open);
-            if (!open) setProjectBeingInteractedWith(null);
-          }}
-        />
-      )}
     </Page>
   );
 }

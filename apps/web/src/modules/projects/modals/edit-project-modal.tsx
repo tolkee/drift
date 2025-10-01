@@ -76,7 +76,7 @@ export function EditProjectModal({
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     await updateProject({
-      id: project._id,
+      projectId: project._id,
       patch: data,
     });
     handleOpenChange(false);

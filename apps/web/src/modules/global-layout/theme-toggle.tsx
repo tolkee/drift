@@ -33,7 +33,7 @@ export function ModeToggle(props: ComponentProps<typeof Button>) {
           onClick={() =>
             setTheme(THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length])
           }
-          size="icon"
+          size="icon-xs"
           {...props}
         >
           {THEME_ICONS[theme]}

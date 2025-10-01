@@ -8,7 +8,7 @@ export const ProjectTag = forwardRef<
   return (
     <Badge
       ref={ref}
-      className="text-black"
+      className="text-white font-medium bg-blue-500"
       style={{ backgroundColor: props.color }}
       {...props}
     >

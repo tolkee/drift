@@ -94,9 +94,6 @@ export function CreateProjectModal({
               Create a new project to track your goals and tasks.
             </ProjectEditionModalDescription>
           </ProjectEditionModalHeader>
-          <ProjectEditionModalPreview>
-            <ProjectCardPreview project={formValues} />
-          </ProjectEditionModalPreview>
           <ProjectEditionModalFormFields>
             <FormField
               control={form.control}

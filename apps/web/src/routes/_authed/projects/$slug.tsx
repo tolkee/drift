@@ -1,10 +1,22 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@drift/backend/convex/api";
-import { IconArrowLeft, IconFolderOff, IconPlus } from "@tabler/icons-react";
+import {
+  IconArrowLeft,
+  IconFilter,
+  IconFolderOff,
+  IconPlus,
+  IconSettings,
+} from "@tabler/icons-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { unSlugify } from "@/lib/utils";
 import {
   EmptyPage,
@@ -15,8 +27,8 @@ import {
   EmptyPageIcon,
   EmptyPageTitle,
 } from "@/modules/global-layout/empty-page";
-import { Page } from "@/modules/global-layout/page-layout";
-import { ProjectKanban } from "@/modules/projects/components/project-kanban";
+import { Page, PageSubHeader } from "@/modules/global-layout/page-layout";
+import { Kanban } from "@/modules/projects/components/kanban/kanban";
 import { CreateColumnModal } from "@/modules/projects/modals/create-column-modal";
 
 export const Route = createFileRoute("/_authed/projects/$slug")({
@@ -37,6 +49,7 @@ export const Route = createFileRoute("/_authed/projects/$slug")({
 });
 
 function RouteComponent() {
+  const { isMobile } = useSidebar();
   const { slug } = Route.useParams();
   const { data: fullProject } = useSuspenseQuery(
     convexQuery(api.projects.queries.getFullProject, {
@@ -83,19 +96,41 @@ function RouteComponent() {
         { label: "Projects", href: "/projects" },
         { label: fullProject.name, href: `/projects/${fullProject.slug}` },
       ]}
+      className="flex flex-col p-0 md:p-0"
     >
+      <PageSubHeader>
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2 md:gap-3">
+            <Button variant="outline" size={isMobile ? "xs" : "sm"}>
+              <IconPlus />
+              <span>Create Column</span>
+            </Button>
+            <Button variant="ghost" size={isMobile ? "icon-xs" : "sm"}>
+              <IconFilter />
+              {isMobile ? null : <span>Filter</span>}
+            </Button>
+          </div>
+          <div className="flex items-center gap-2 md:gap-3">
+            <Tooltip delayDuration={600}>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size={isMobile ? "icon-xs" : "sm"}>
+                  <IconSettings />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Project Settings</TooltipContent>
+            </Tooltip>
+          </div>
+        </div>
+      </PageSubHeader>
       <CreateColumnModal
         projectId={fullProject._id}
         open={isCreateColumnModalOpen}
         onOpenChange={setIsCreateColumnModalOpen}
         rank={fullProject.columns.length}
-      >
-        <Button className="mb-6 md:mb-8 w-full md:w-fit">
-          <IconPlus />
-          Create Column
-        </Button>
-      </CreateColumnModal>
-      <ProjectKanban fullProject={fullProject} />
+      />
+      <div className="flex-grow">
+        <Kanban fullProject={fullProject} />
+      </div>
     </Page>
   );
 }

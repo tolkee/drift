@@ -54,7 +54,7 @@ export function DeleteProjectModal({
   const handleSubmit = async () => {
     if (!isNameAckCorrect) return;
 
-    await deleteProject({ id: project._id });
+    await deleteProject({ projectId: project._id });
     handleOpenChange(false);
     toast.success(`Project "${project.name}" deleted successfully`);
   };
