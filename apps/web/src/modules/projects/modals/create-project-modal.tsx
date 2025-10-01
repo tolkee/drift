@@ -3,7 +3,7 @@ import { api } from "@drift/backend/convex/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { TagsCreatableCombobox } from "@/components/tags-creatable-combobox";
@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ProjectCardPreview } from "../components/project-card";
 import {
   ProjectEditionModal,
   ProjectEditionModalClose,
@@ -29,8 +28,6 @@ import {
   ProjectEditionModalForm,
   ProjectEditionModalFormFields,
   ProjectEditionModalHeader,
-  ProjectEditionModalPreview,
-  ProjectEditionModalPreviewForBigScreen,
   ProjectEditionModalTitle,
   ProjectEditionModalTrigger,
 } from "./project-edition-modal";
@@ -57,10 +54,6 @@ export function CreateProjectModal({
       description: "",
       tags: [],
     },
-  });
-
-  const formValues = useWatch({
-    control: form.control,
   });
 
   const { data: projectTagsRef, isLoading: isProjectTagsRefLoading } = useQuery(
@@ -102,7 +95,7 @@ export function CreateProjectModal({
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} placeholder="ProjectxXx" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -115,7 +108,11 @@ export function CreateProjectModal({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} />
+                    <Textarea
+                      {...field}
+                      className="h-40"
+                      placeholder="Best project everrrrr..."
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -158,9 +155,6 @@ export function CreateProjectModal({
             </ProjectEditionModalClose>
           </ProjectEditionModalFooter>
         </ProjectEditionModalForm>
-        <ProjectEditionModalPreviewForBigScreen>
-          <ProjectCardPreview project={formValues} />
-        </ProjectEditionModalPreviewForBigScreen>
       </ProjectEditionModalContent>
     </ProjectEditionModal>
   );

@@ -4,7 +4,7 @@ import type { DataModel } from "@drift/backend/convex/dataModel";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { TagsCreatableCombobox } from "@/components/tags-creatable-combobox";
@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ProjectCardPreview } from "../components/project-card";
 import {
   ProjectEditionModal,
   ProjectEditionModalClose,
@@ -29,8 +28,6 @@ import {
   ProjectEditionModalForm,
   ProjectEditionModalFormFields,
   ProjectEditionModalHeader,
-  ProjectEditionModalPreview,
-  ProjectEditionModalPreviewForBigScreen,
   ProjectEditionModalTitle,
   ProjectEditionModalTrigger,
 } from "./project-edition-modal";
@@ -59,9 +56,6 @@ export function EditProjectModal({
       description: project.description,
       tags: project.tags,
     },
-  });
-  const formValues = useWatch({
-    control: form.control,
   });
 
   const { data: projectTagsRef, isLoading: isProjectTagsRefLoading } = useQuery(
@@ -96,9 +90,6 @@ export function EditProjectModal({
               Edit your project information.
             </ProjectEditionModalDescription>
           </ProjectEditionModalHeader>
-          <ProjectEditionModalPreview>
-            <ProjectCardPreview project={formValues} />
-          </ProjectEditionModalPreview>
           <ProjectEditionModalFormFields>
             <FormField
               control={form.control}
@@ -120,7 +111,7 @@ export function EditProjectModal({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} />
+                    <Textarea {...field} className="h-40" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -162,9 +153,6 @@ export function EditProjectModal({
             </ProjectEditionModalClose>
           </ProjectEditionModalFooter>
         </ProjectEditionModalForm>
-        <ProjectEditionModalPreviewForBigScreen>
-          <ProjectCardPreview project={formValues} />
-        </ProjectEditionModalPreviewForBigScreen>
       </ProjectEditionModalContent>
     </ProjectEditionModal>
   );

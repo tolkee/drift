@@ -87,7 +87,7 @@ export function TagsCreatableCombobox({
         className="p-0"
         style={{ width: buttonRef.current?.clientWidth }}
       >
-        <Command>
+        <Command className="w-full">
           <CommandInput
             placeholder={
               availableTags.length > 0

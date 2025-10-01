@@ -58,7 +58,7 @@ function ProjectEditionModalContent(props: {
     <DialogContent
       {...props}
       className={cn(
-        "flex gap-10 items-center md:flex-col-reverse lg:flex-row md:max-w-[700px] lg:max-w-[1200px]",
+        "flex gap-10 items-center md:flex-col-reverse lg:flex-row md:max-w-[600px] ",
         props.className,
       )}
     />
@@ -94,7 +94,7 @@ function ProjectEditionModalForm<TFormSchema extends FieldValues>({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("flex-1 min-w-[600px]", className)}
+        className={cn("flex-1", className)}
       >
         {children}
       </form>
@@ -150,7 +150,7 @@ function ProjectEditionModalFooter(props: {
   return (
     <DialogFooter
       {...props}
-      className={cn("flex-row-reverse justify-start", props.className)}
+      className={cn("flex-row-reverse justify-start md:mt-6", props.className)}
     />
   );
 }

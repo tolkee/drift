@@ -12,11 +12,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { unSlugify } from "@/lib/utils";
 import {
   EmptyPage,
@@ -30,6 +25,7 @@ import {
 import { Page, PageSubHeader } from "@/modules/global-layout/page-layout";
 import { Kanban } from "@/modules/projects/components/kanban/kanban";
 import { CreateColumnModal } from "@/modules/projects/modals/create-column-modal";
+import { EditProjectModal } from "@/modules/projects/modals/edit-project-modal";
 
 export const Route = createFileRoute("/_authed/projects/$slug")({
   component: RouteComponent,
@@ -111,14 +107,11 @@ function RouteComponent() {
             </Button>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
-            <Tooltip delayDuration={600}>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size={isMobile ? "icon-xs" : "sm"}>
-                  <IconSettings />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Project Settings</TooltipContent>
-            </Tooltip>
+            <EditProjectModal project={fullProject}>
+              <Button variant="outline" size={isMobile ? "icon-xs" : "sm"}>
+                <IconSettings />
+              </Button>
+            </EditProjectModal>
           </div>
         </div>
       </PageSubHeader>
@@ -128,6 +121,7 @@ function RouteComponent() {
         onOpenChange={setIsCreateColumnModalOpen}
         rank={fullProject.columns.length}
       />
+
       <div className="flex-grow">
         <Kanban fullProject={fullProject} />
       </div>
