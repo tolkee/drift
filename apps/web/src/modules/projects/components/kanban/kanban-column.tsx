@@ -67,7 +67,7 @@ export function KanbanColumn({
   return (
     <div
       className={cn(
-        "flex flex-col bg-background-secondary p-4 h-full w-85 md:w-100",
+        "flex flex-col bg-background-secondary p-4 h-full w-85 md:w-90 3xl:w-100",
         className,
       )}
       {...props}
@@ -105,11 +105,5 @@ export function KanbanColumn({
         </div>
       </SortableContext>
     </div>
-  );
-}
-
-export function KanbanColumnPlaceholder() {
-  return (
-    <div className="flex flex-col bg-background-secondary p-4 h-full w-85 md:w-100" />
   );
 }

@@ -17,12 +17,6 @@ type KanbanTaskProps = {
   task: FullProjectTask;
 };
 
-export function KanbanTaskPlaceholder() {
-  return (
-    <div className="w-full min-h-20 border p-3 rounded-md flex flex-col gap-3 justify-between transition-all cursor-default bg-sidebar-accent" />
-  );
-}
-
 export function SortableKanbanTask({
   className,
   ...props
@@ -79,7 +73,7 @@ export function KanbanTask({
   return (
     <div
       className={cn(
-        "w-full min-h-20 border p-3 rounded-md flex flex-col gap-3 justify-between transition-all cursor-default bg-sidebar-accent",
+        "w-full min-h-20 border p-3 rounded-md flex flex-col gap-3 justify-between transition-all cursor-default bg-background-tertiary hover:bg-background-tertiary-hover",
         task.completed && "opacity-40",
         className,
       )}

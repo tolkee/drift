@@ -43,6 +43,8 @@
 .dark {
   --background: oklch(0.145 0 0);
   --background-secondary: oklch(0.19 0 0);
+  --background-tertiary: oklch(0.23 0 0);
+  --background-tertiary-hover: oklch(0.24 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.145 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -79,6 +81,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary);
+  --color-background-tertiary-hover: var(--background-tertiary-hover);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
