@@ -1,4 +1,5 @@
 import { useDroppable } from "@dnd-kit/core";
+import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { DataModel } from "@drift/backend/convex/dataModel";
@@ -28,6 +29,10 @@ export function SortableKanbanColumn({
     id: props.column._id,
     data: {
       type: "column",
+      modifiers: [restrictToHorizontalAxis],
+      dragOverlay: () => (
+        <KanbanColumn column={props.column} className="cursor-grabbing" />
+      ),
     },
   });
   const style = {
@@ -100,5 +105,11 @@ export function KanbanColumn({
         </div>
       </SortableContext>
     </div>
+  );
+}
+
+export function KanbanColumnPlaceholder() {
+  return (
+    <div className="flex flex-col bg-background-secondary p-4 h-full w-85 md:w-100" />
   );
 }

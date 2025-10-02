@@ -17,6 +17,12 @@ type KanbanTaskProps = {
   task: FullProjectTask;
 };
 
+export function KanbanTaskPlaceholder() {
+  return (
+    <div className="w-full min-h-20 border p-3 rounded-md flex flex-col gap-3 justify-between transition-all cursor-default bg-sidebar-accent" />
+  );
+}
+
 export function SortableKanbanTask({
   className,
   ...props
@@ -32,6 +38,9 @@ export function SortableKanbanTask({
     id: props.task._id,
     data: {
       type: "task",
+      dragOverlay: () => (
+        <KanbanTask task={props.task} className="cursor-grabbing" />
+      ),
     },
   });
   const style = {
@@ -70,7 +79,7 @@ export function KanbanTask({
   return (
     <div
       className={cn(
-        "w-full min-h-20 bg-accent/60 border p-3 rounded-md flex flex-col gap-3 justify-between hover:bg-accent/80 transition-all cursor-default",
+        "w-full min-h-20 border p-3 rounded-md flex flex-col gap-3 justify-between transition-all cursor-default bg-sidebar-accent",
         task.completed && "opacity-40",
         className,
       )}
