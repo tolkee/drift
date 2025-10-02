@@ -31,15 +31,13 @@ export function Kanban({ fullProject }: KanbanProps) {
     }),
   );
 
-  const activeItemData = activeItem?.data?.current;
-
   return (
     <DndContext
       sensors={sensors}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
-      modifiers={activeItemData?.modifiers ?? []}
+      modifiers={activeItem?.metadata?.modifiers ?? []}
     >
       <SortableContext
         items={localColumnsState.map((column) => column._id)}
@@ -54,7 +52,7 @@ export function Kanban({ fullProject }: KanbanProps) {
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </SortableContext>
-      <DragOverlay>{activeItemData?.dragOverlay()}</DragOverlay>
+      <DragOverlay>{activeItem?.metadata?.dragOverlay()}</DragOverlay>
     </DndContext>
   );
 }

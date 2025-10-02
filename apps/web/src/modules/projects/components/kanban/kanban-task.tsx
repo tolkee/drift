@@ -4,6 +4,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { api } from "@drift/backend/convex/api";
 import { IconCircleCheck, IconCircleDashedCheck } from "@tabler/icons-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation } from "convex/react";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -17,10 +19,9 @@ type KanbanTaskProps = {
   task: FullProjectTask;
 };
 
-export function SortableKanbanTask({
-  className,
-  ...props
-}: KanbanTaskProps & React.ComponentProps<"div">) {
+export function SortableKanbanTask(
+  props: KanbanTaskProps & React.ComponentProps<"div">,
+) {
   const {
     attributes,
     listeners,
@@ -49,7 +50,7 @@ export function SortableKanbanTask({
       {...props}
       {...attributes}
       {...listeners}
-      className={cn(isDragging && "opacity-50", className)}
+      isPlaceholder={isDragging}
     />
   );
 }
@@ -57,12 +58,17 @@ export function SortableKanbanTask({
 export function KanbanTask({
   task,
   className,
+  isPlaceholder,
   ...props
-}: KanbanTaskProps & React.ComponentProps<"div">) {
+}: KanbanTaskProps &
+  React.ComponentProps<"div"> & { isPlaceholder?: boolean }) {
   const { data: projectTagsRef } = useSuspenseQuery(
     convexQuery(api.projects.queries.getProjectTaskTagsRef, {
       projectId: task.projectId,
     }),
+  );
+  const toggleTaskCompletion = useMutation(
+    api.projects.mutations.toggleTaskCompletion,
   );
 
   const tagsWithColors = task.tags.map((tag) => ({
@@ -73,36 +79,53 @@ export function KanbanTask({
   return (
     <div
       className={cn(
-        "w-full min-h-20 border p-3 rounded-md flex flex-col gap-3 justify-between transition-all cursor-default bg-background-tertiary hover:bg-background-tertiary-hover",
-        task.completed && "opacity-40",
+        "w-full min-h-20 border p-3 rounded-md transition-all cursor-default bg-background-tertiary hover:bg-background-tertiary-hover relative",
+        isPlaceholder && "bg-background-tertiary/40",
         className,
       )}
       {...props}
     >
-      <div className="flex flex-row item-start gap-2">
-        {task.completed ? (
-          <IconCircleCheck className="size-5 min-h-5 min-w-5 text-green-600" />
-        ) : (
+      <div
+        className={cn(
+          "flex flex-col gap-3 justify-between w-full h-full",
+          task.completed && "opacity-30",
+          isPlaceholder && "opacity-0",
+        )}
+      >
+        <div className="flex flex-row items-start gap-1">
           <Tooltip delayDuration={600}>
             <TooltipTrigger asChild>
-              <IconCircleDashedCheck className="size-5 min-h-5 min-w-5 text-muted-foreground/40 hover:text-muted-foreground/70" />
+              <Button
+                variant="link"
+                size="icon-xs"
+                onClick={() => toggleTaskCompletion({ taskId: task._id })}
+                className="h-fit"
+              >
+                {task.completed ? (
+                  <IconCircleCheck className="size-5 min-h-5 min-w-5 text-green-600" />
+                ) : (
+                  <IconCircleDashedCheck className="size-5 min-h-5 min-w-5 text-muted-foreground/40 hover:text-muted-foreground/70" />
+                )}
+              </Button>
             </TooltipTrigger>
-            <TooltipContent>Mark as completed</TooltipContent>
+            <TooltipContent>
+              {task.completed ? "Mark as incomplete" : "Mark as completed"}
+            </TooltipContent>
           </Tooltip>
-        )}
-        <span className="font-medium text-sm line-clamp-2">
-          Fix the display of project Kanband
-        </span>
-      </div>
-      {task.tags.length > 0 && (
-        <div className="flex items-center gap-2">
-          {tagsWithColors.map((tag) => (
-            <ProjectTag key={tag.name} color={tag.color}>
-              {tag.name}
-            </ProjectTag>
-          ))}
+          <span className="font-medium text-sm line-clamp-2 h-fit">
+            {task.name}
+          </span>
         </div>
-      )}
+        {task.tags.length > 0 && (
+          <div className="flex items-center gap-2">
+            {tagsWithColors.map((tag) => (
+              <ProjectTag key={tag.name} color={tag.color}>
+                {tag.name}
+              </ProjectTag>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

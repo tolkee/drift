@@ -1,5 +1,4 @@
 import type {
-  Active,
   DragEndEvent,
   DragOverEvent,
   DragStartEvent,
@@ -8,9 +7,13 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { api } from "@drift/backend/convex/api";
 import { useMutation } from "convex/react";
 import { useEffect, useState } from "react";
-import type { FullProject } from "./types";
-
-type ItemType = "column" | "task";
+import type {
+  FullProject,
+  FullProjectColumn,
+  FullProjectTask,
+  ItemType,
+  SortableMetadata,
+} from "./types";
 
 function getEventItemType(
   event: DragStartEvent | DragEndEvent | DragOverEvent,
@@ -19,7 +22,11 @@ function getEventItemType(
 }
 
 export function useKanban(fullProject: FullProject) {
-  const [activeItem, setActiveItem] = useState<Active | null>(null);
+  const [activeItem, setActiveItem] = useState<{
+    metadata: SortableMetadata;
+    data: FullProjectTask | FullProjectColumn;
+  } | null>(null);
+
   // Sort columns and tasks by rank
   const [localColumnsState, setlocalColumnsState] = useState(
     fullProject.columns
@@ -148,22 +155,23 @@ export function useKanban(fullProject: FullProject) {
 
     if (!activeItem) return;
 
-    const oldTaskVersion = localColumnsState
-      .flatMap((column) => column.tasks)
-      .find((task) => task._id === activeItem.id);
-    const currentTask = localColumnsState
+    // we know that the active item is a task (this function is only called for tasks)
+    const oldTaskData = activeItem?.data as FullProjectTask;
+    const newTaskData = localColumnsState
       .flatMap((column) => column.tasks)
       .find((task) => task._id === event.active.id);
 
+    if (!oldTaskData || !newTaskData) return;
+
     const hasTaskColumnChanged =
-      oldTaskVersion?.columnId !== currentTask?.columnId;
-    const hasTaskRankChanged = oldTaskVersion?.rank !== currentTask?.rank;
+      oldTaskData?.columnId !== newTaskData?.columnId;
+    const hasTaskRankChanged = oldTaskData?.rank !== newTaskData?.rank;
 
     if (!hasTaskColumnChanged && !hasTaskRankChanged) return;
 
     const currentColumnTaskPatchs =
       localColumnsState
-        .find((column) => column._id === currentTask?.columnId)
+        .find((column) => column._id === newTaskData?.columnId)
         ?.tasks?.map((task) => ({
           id: task._id,
           patch: {
@@ -176,7 +184,7 @@ export function useKanban(fullProject: FullProject) {
     if (hasTaskColumnChanged) {
       const previousColumnTasksPatchs =
         localColumnsState
-          .find((column) => column._id === oldTaskVersion?.columnId)
+          .find((column) => column._id === oldTaskData?.columnId)
           ?.tasks?.map((task) => ({
             id: task._id,
             patch: {
@@ -249,7 +257,32 @@ export function useKanban(fullProject: FullProject) {
   };
 
   const onDragStart = (event: DragStartEvent) => {
-    setActiveItem(event.active);
+    switch (getEventItemType(event)) {
+      case "column": {
+        const column = localColumnsState.find(
+          (column) => column._id === event.active.id,
+        );
+        if (!column) return;
+        setActiveItem({
+          metadata: event.active.data.current as SortableMetadata,
+          data: column,
+        });
+
+        return;
+      }
+      case "task": {
+        const task = localColumnsState
+          .flatMap((column) => column.tasks)
+          .find((task) => task._id === event.active.id);
+        if (!task) return;
+        setActiveItem({
+          metadata: event.active.data.current as SortableMetadata,
+          data: task,
+        });
+
+        return;
+      }
+    }
   };
 
   return {

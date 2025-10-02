@@ -1,15 +1,9 @@
 import { v } from "convex/values";
 import slugify from "slugify";
-import { api } from "../_generated/api";
 import { authenticatedMutation } from "../auth/customs";
 import { DEFAULT_COLUMNS } from "./lib/constants";
 import { columnMutation, projectMutation, taskMutation } from "./lib/customs";
-import { ProjectDoneColumnNotSetError } from "./lib/errors";
-import {
-  remapRanksDueToTaskAddition,
-  remapRanksDueToTaskRankChange,
-  remapRanksDueToTaskRemoval,
-} from "./lib/utils";
+import { addTaskToColumn, removeTaskFromColumn } from "./lib/utils";
 
 export const createProject = authenticatedMutation({
   args: {
@@ -282,80 +276,6 @@ export const updateTask = taskMutation({
   },
 });
 
-export const markTaskAsCompleted = taskMutation({
-  args: {
-    taskId: v.id("tasks"),
-  },
-  handler: async (ctx, args) => {
-    if (!ctx.project.doneColumnId) throw new ProjectDoneColumnNotSetError();
-
-    const tasksInDoneColumn = await ctx.db
-      .query("tasks")
-      .withIndex("by_project_column", (q) =>
-        q
-          .eq("projectId", ctx.task.projectId)
-          // biome-ignore lint/style/noNonNullAssertion: validated by the above if statement (dont know why typescript still considers it nullable)
-          .eq("columnId", ctx.project.doneColumnId!),
-      )
-      .collect();
-
-    await ctx.runMutation(api.projects.mutations.moveTask, {
-      taskId: args.taskId,
-      newColumnId: ctx.project.doneColumnId,
-      newRank: tasksInDoneColumn.length,
-    });
-
-    return await ctx.db.patch(args.taskId, {
-      completed: true,
-    });
-  },
-});
-
-export const moveTask = taskMutation({
-  args: {
-    taskId: v.id("tasks"),
-    newColumnId: v.optional(v.id("columns")),
-    newRank: v.number(),
-  },
-  handler: async (ctx, args) => {
-    if (!args.newColumnId) {
-      return Promise.all([
-        remapRanksDueToTaskRankChange({
-          ctx,
-          projectId: ctx.task.projectId,
-          columnId: ctx.task.columnId,
-          taskId: args.taskId,
-          newRank: args.newRank,
-        }),
-        ctx.db.patch(args.taskId, {
-          rank: args.newRank,
-        }),
-      ]);
-    }
-
-    await Promise.all([
-      remapRanksDueToTaskRemoval({
-        ctx,
-        projectId: ctx.task.projectId,
-        columnId: ctx.task.columnId,
-        taskId: args.taskId,
-      }),
-
-      remapRanksDueToTaskAddition({
-        ctx,
-        projectId: ctx.task.projectId,
-        columnId: args.newColumnId,
-        newRank: args.newRank,
-      }),
-    ]);
-
-    return await ctx.db.patch(args.taskId, {
-      columnId: args.newColumnId,
-      rank: args.newRank,
-    });
-  },
-});
-
 export const deleteTask = taskMutation({
   args: {
     taskId: v.id("tasks"),
@@ -405,5 +325,34 @@ export const bulkUpdateTasks = authenticatedMutation({
         });
       }),
     );
+  },
+});
+
+export const toggleTaskCompletion = taskMutation({
+  args: {
+    taskId: v.id("tasks"),
+  },
+  handler: async (ctx, args) => {
+    if (ctx.project.doneColumnId && !ctx.task.completed) {
+      console.log("yo");
+      await Promise.all([
+        addTaskToColumn({
+          ctx,
+          projectId: ctx.project._id,
+          columnId: ctx.project.doneColumnId,
+          taskId: ctx.task._id,
+        }),
+        removeTaskFromColumn({
+          ctx,
+          projectId: ctx.project._id,
+          columnId: ctx.task.columnId,
+          taskId: args.taskId,
+        }),
+      ]);
+    }
+
+    await ctx.db.patch(args.taskId, {
+      completed: !ctx.task.completed,
+    });
   },
 });

@@ -20,48 +20,7 @@ export async function getProjectBySlugWithAccessGuards(
   return project;
 }
 
-export async function remapRanksDueToTaskRankChange({
-  ctx,
-  projectId,
-  columnId,
-  newRank,
-  taskId,
-}: {
-  ctx: GenericMutationCtx<DataModel>;
-  projectId: Id<"projects">;
-  columnId: Id<"columns">;
-  taskId: Id<"tasks">;
-  newRank: number;
-}) {
-  const tasks = await ctx.db
-    .query("tasks")
-    .withIndex("by_project_column", (q) =>
-      q.eq("projectId", projectId).eq("columnId", columnId),
-    )
-    .collect();
-
-  const oldRank = tasks.find((task) => task._id === taskId)?.rank;
-  if (!oldRank) {
-    return;
-  }
-
-  const tasksToDowngradeRanks = tasks.filter(
-    (task) => task.rank > oldRank && task.rank <= newRank,
-  );
-
-  await Promise.all(
-    tasksToDowngradeRanks.map((task) => {
-      return ctx.db.patch(task._id, {
-        rank: task.rank - 1,
-      });
-    }),
-  );
-}
-
-/**
- * Remap the ranks of the tasks in the column due to a task being removed.
- */
-export async function remapRanksDueToTaskRemoval({
+export async function removeTaskFromColumn({
   ctx,
   projectId,
   columnId,
@@ -96,19 +55,18 @@ export async function remapRanksDueToTaskRemoval({
   );
 }
 
-/**
- * Remap the ranks of the tasks in the column due to a task being added.
- */
-export async function remapRanksDueToTaskAddition({
+export async function addTaskToColumn({
   ctx,
   projectId,
   columnId,
+  taskId,
   newRank,
 }: {
   ctx: GenericMutationCtx<DataModel>;
   projectId: Id<"projects">;
   columnId: Id<"columns">;
-  newRank: number;
+  taskId: Id<"tasks">;
+  newRank?: number;
 }) {
   const tasks = await ctx.db
     .query("tasks")
@@ -117,13 +75,19 @@ export async function remapRanksDueToTaskAddition({
     )
     .collect();
 
+  newRank = newRank ?? tasks.length;
+
   const tasksToUpgradeRanks = tasks.filter((task) => task.rank >= newRank);
 
-  await Promise.all(
-    tasksToUpgradeRanks.map((task) => {
+  await Promise.all([
+    ...tasksToUpgradeRanks.map((task) => {
       return ctx.db.patch(task._id, {
         rank: task.rank + 1,
       });
     }),
-  );
+    ctx.db.patch(taskId, {
+      columnId,
+      rank: newRank,
+    }),
+  ]);
 }
