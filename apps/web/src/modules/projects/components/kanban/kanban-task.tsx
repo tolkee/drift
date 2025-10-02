@@ -79,7 +79,7 @@ export function KanbanTask({
   return (
     <div
       className={cn(
-        "w-full min-h-20 border p-3 rounded-md transition-all cursor-default bg-background-tertiary hover:bg-background-tertiary-hover relative",
+        "w-full min-h-20 border p-3 rounded-sm transition-all cursor-default bg-background-tertiary hover:bg-background-tertiary-hover relative",
         isPlaceholder && "bg-background-tertiary/40",
         className,
       )}

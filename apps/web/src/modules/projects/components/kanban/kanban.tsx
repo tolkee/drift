@@ -9,7 +9,7 @@ import {
   horizontalListSortingStrategy,
   SortableContext,
 } from "@dnd-kit/sortable";
-
+import { createPortal } from "react-dom";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { SortableKanbanColumn } from "./kanban-column";
 import type { FullProject } from "./types";
@@ -52,7 +52,10 @@ export function Kanban({ fullProject }: KanbanProps) {
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </SortableContext>
-      <DragOverlay>{activeItem?.metadata?.dragOverlay()}</DragOverlay>
+      {createPortal(
+        <DragOverlay>{activeItem?.metadata?.dragOverlay()}</DragOverlay>,
+        document.body,
+      )}
     </DndContext>
   );
 }
