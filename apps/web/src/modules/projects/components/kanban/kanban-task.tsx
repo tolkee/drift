@@ -1,4 +1,6 @@
 import { convexQuery } from "@convex-dev/react-query";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { api } from "@drift/backend/convex/api";
 import { IconCircleCheck, IconCircleDashedCheck } from "@tabler/icons-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -15,7 +17,45 @@ type KanbanTaskProps = {
   task: FullProjectTask;
 };
 
-export function KanbanTask({ task }: KanbanTaskProps) {
+export function SortableKanbanTask({
+  className,
+  ...props
+}: KanbanTaskProps & React.ComponentProps<"div">) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transition,
+    transform,
+    isDragging,
+  } = useSortable({
+    id: props.task._id,
+    data: {
+      type: "task",
+    },
+  });
+  const style = {
+    transition,
+    transform: CSS.Transform.toString(transform),
+  };
+
+  return (
+    <KanbanTask
+      ref={setNodeRef}
+      style={style}
+      {...props}
+      {...attributes}
+      {...listeners}
+      className={cn(isDragging && "opacity-50", className)}
+    />
+  );
+}
+
+export function KanbanTask({
+  task,
+  className,
+  ...props
+}: KanbanTaskProps & React.ComponentProps<"div">) {
   const { data: projectTagsRef } = useSuspenseQuery(
     convexQuery(api.projects.queries.getProjectTaskTagsRef, {
       projectId: task.projectId,
@@ -30,9 +70,11 @@ export function KanbanTask({ task }: KanbanTaskProps) {
   return (
     <div
       className={cn(
-        "w-full min-h-20 bg-accent/60 border p-3 rounded-md flex flex-col gap-3 justify-between cursor-default hover:bg-accent/80 transition-all",
+        "w-full min-h-20 bg-accent/60 border p-3 rounded-md flex flex-col gap-3 justify-between hover:bg-accent/80 transition-all cursor-default",
         task.completed && "opacity-40",
+        className,
       )}
+      {...props}
     >
       <div className="flex flex-row item-start gap-2">
         {task.completed ? (

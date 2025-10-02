@@ -4,7 +4,7 @@ import { v } from "convex/values";
 export default {
   projects: defineTable({
     name: v.string(),
-    description: v.string(),
+    description: v.optional(v.string()),
     tags: v.array(v.string()),
     slug: v.string(),
     userId: v.string(),

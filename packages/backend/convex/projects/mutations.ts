@@ -364,3 +364,46 @@ export const deleteTask = taskMutation({
     await ctx.db.delete(args.taskId);
   },
 });
+
+export const updateColumnsRanks = authenticatedMutation({
+  args: {
+    columnsPatchs: v.array(
+      v.object({
+        id: v.id("columns"),
+        rank: v.number(),
+      }),
+    ),
+  },
+  handler: async (ctx, args) => {
+    await Promise.all(
+      args.columnsPatchs.map((columnRankPatch) => {
+        return ctx.db.patch(columnRankPatch.id, {
+          rank: columnRankPatch.rank,
+        });
+      }),
+    );
+  },
+});
+
+export const bulkUpdateTasks = authenticatedMutation({
+  args: {
+    tasksPatchs: v.array(
+      v.object({
+        id: v.id("tasks"),
+        patch: v.object({
+          rank: v.number(),
+          columnId: v.optional(v.id("columns")),
+        }),
+      }),
+    ),
+  },
+  handler: async (ctx, args) => {
+    await Promise.all(
+      args.tasksPatchs.map((taskPatch) => {
+        return ctx.db.patch(taskPatch.id, {
+          ...taskPatch.patch,
+        });
+      }),
+    );
+  },
+});

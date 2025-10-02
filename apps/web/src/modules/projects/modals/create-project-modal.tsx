@@ -34,7 +34,7 @@ import {
 
 const formSchema = z.object({
   name: z.string().min(1),
-  description: z.string().min(1),
+  description: z.string(),
   tags: z.array(z.string()),
 });
 
